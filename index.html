@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Muskan Gupta · Product Manager · Fintech, Analytics & SaaS</title>
+<meta name="description" content="Product manager focused on fintech, payments and analytics. MBA in Finance & Data Analytics. Four case studies, each with a live prototype you can click through." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F3EC; --paper-2:#EFECE2; --ink:#171B1E; --ink-soft:#565E64;
+    --line:#DEDACC; --emerald:#0C6B58; --emerald-2:#0E7D67; --gold:#B7822E;
+    --dark:#12161A; --dark-2:#1B2127; --dark-line:#2C343B; --dark-soft:#9AA6AE;
+    --r:14px; --wrap:1120px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;}
+  h1,h2,h3,h4{font-family:"Space Grotesk",sans-serif;font-weight:600;line-height:1.12;margin:0;letter-spacing:-0.015em;}
+  p{margin:0;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px;}
+  .eyebrow{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--emerald);}
+
+  /* NAV */
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(245,243,236,0.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:66px;}
+  .brand{font-family:"Space Grotesk";font-weight:700;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 4px rgba(12,107,88,0.14);}
+  .nav-links{display:flex;gap:30px;align-items:center;}
+  .nav-links a{font-size:15px;color:var(--ink-soft);font-weight:500;transition:color .2s;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-cta{background:var(--ink);color:var(--paper);padding:9px 18px;border-radius:999px;font-weight:600;font-size:14.5px;transition:transform .2s,background .2s;}
+  .nav-cta:hover{background:var(--emerald);transform:translateY(-1px);color:#fff;}
+  .menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:9px;padding:8px 10px;cursor:pointer;}
+  .menu-btn span{display:block;width:20px;height:2px;background:var(--ink);margin:4px 0;}
+
+  /* HERO */
+  .hero{padding:90px 0 60px;}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;}
+  .hero-eyebrow .pulse{width:8px;height:8px;border-radius:50%;background:var(--emerald);animation:pulse 2.2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(12,107,88,0.4);}70%{box-shadow:0 0 0 9px rgba(12,107,88,0);}100%{box-shadow:0 0 0 0 rgba(12,107,88,0);}}
+  .hero h1{font-size:clamp(32px,6vw,68px);font-weight:700;max-width:17ch;letter-spacing:-0.02em;overflow-wrap:break-word;}
+  .hero h1 .accent{color:var(--emerald);}
+  .hero-sub{font-size:clamp(17px,1.6vw,19.5px);color:var(--ink-soft);max-width:56ch;margin:26px 0 0;line-height:1.62;}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:999px;font-weight:600;font-size:15px;transition:transform .2s,background .2s,border-color .2s;cursor:pointer;}
+  .btn-primary{background:var(--emerald);color:#fff;}
+  .btn-primary:hover{background:var(--emerald-2);transform:translateY(-2px);}
+  .btn-ghost{border:1px solid var(--line);color:var(--ink);background:transparent;}
+  .btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px);}
+  .btn svg{width:16px;height:16px;}
+
+  /* identity ledger */
+  .ledger{margin-top:54px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,#FBFAF5,#F2EFE6);overflow:hidden;}
+  .ledger-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 14px;padding:13px 20px;border-bottom:1px solid var(--line);font-family:"Space Mono";font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-soft);}
+  .ledger-head .avail{color:var(--emerald);display:inline-flex;align-items:center;gap:8px;}
+  .ledger-head .avail::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--emerald);}
+  .ledger-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+  .ledger-cell{padding:20px 22px;border-right:1px solid var(--line);}
+  .ledger-cell:last-child{border-right:none;}
+  .ledger-cell .k{font-family:"Space Mono";font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);}
+  .ledger-cell .v{font-family:"Space Grotesk";font-size:17px;font-weight:600;margin-top:8px;line-height:1.3;}
+
+  /* PROTOTYPE STRIP */
+  .proto-strip{margin-top:22px;border:1px solid var(--emerald);border-radius:var(--r);background:linear-gradient(180deg,#0C6B58,#0A5C4B);color:#fff;padding:22px 24px;}
+  .proto-strip-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+  .live-dot{width:9px;height:9px;border-radius:50%;background:#7FE7C9;align-self:center;box-shadow:0 0 0 0 rgba(127,231,201,0.7);animation:live 1.8s infinite;}
+  @keyframes live{0%{box-shadow:0 0 0 0 rgba(127,231,201,0.7);}70%{box-shadow:0 0 0 8px rgba(127,231,201,0);}100%{box-shadow:0 0 0 0 rgba(127,231,201,0);}}
+  .proto-strip-top .t{font-family:"Space Grotesk";font-weight:600;font-size:18px;}
+  .proto-strip-top .s{font-size:14.5px;color:#CDEDE4;}
+  .proto-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .pthumb{display:block;background:#0A5344;border:1px solid rgba(255,255,255,0.14);border-radius:12px;overflow:hidden;transition:transform .2s,border-color .2s;}
+  .pthumb:hover{transform:translateY(-4px);border-color:#7FE7C9;}
+  .pthumb .shot{height:150px;background:#0d0d0f center top/cover no-repeat;position:relative;}
+  .pthumb .shot::after{content:"▶ Try it";position:absolute;bottom:8px;right:8px;font-family:"Space Mono";font-size:10px;background:rgba(0,0,0,0.55);color:#fff;padding:3px 8px;border-radius:999px;}
+  .pthumb .cap{padding:11px 13px;font-size:12.5px;color:#DCF3EC;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .pthumb .cap b{font-family:"Space Grotesk";font-weight:600;font-size:14px;color:#fff;}
+  .pthumb .cap span{font-family:"Space Mono";font-size:10.5px;letter-spacing:0.04em;}
+
+  /* SECTION SCAFFOLD */
+  section{padding:84px 0;}
+  .sec-head{max-width:62ch;margin-bottom:48px;}
+  .sec-head h2{font-size:clamp(27px,3.4vw,38px);margin-top:14px;line-height:1.16;}
+  .sec-head p{color:var(--ink-soft);margin-top:16px;font-size:18px;}
+
+  /* PILLARS */
+  .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .pillar{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);padding:30px 28px;transition:transform .25s,box-shadow .25s;}
+  .pillar:hover{transform:translateY(-4px);box-shadow:0 18px 40px -24px rgba(21,25,28,0.35);}
+  .pillar .num{font-family:"Space Mono";font-size:12px;color:var(--gold);letter-spacing:0.08em;}
+  .pillar h3{font-size:21px;margin:16px 0 10px;}
+  .pillar p{color:var(--ink-soft);font-size:15.5px;line-height:1.62;}
+
+  /* CASE STUDIES */
+  .cases{background:var(--dark);color:var(--paper);border-top:1px solid var(--dark-line);border-bottom:1px solid var(--dark-line);}
+  .cases .eyebrow{color:#5FBFA6;}
+  .cases .sec-head h2{color:var(--paper);}
+  .cases .sec-head p{color:var(--dark-soft);}
+  .case{border:1px solid var(--dark-line);border-radius:18px;background:linear-gradient(180deg,#171C21,#13181C);margin-bottom:28px;overflow:hidden;}
+  .case-top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 30px;border-bottom:1px solid var(--dark-line);flex-wrap:wrap;}
+  .case-domain{font-family:"Space Mono";font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#5FBFA6;}
+  .case-ref{font-family:"Space Mono";font-size:11.5px;color:#6C7880;letter-spacing:0.06em;}
+  .chip{font-family:"Space Mono";font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;border:1px solid var(--dark-line);color:#C9D2D8;}
+  .chip.live{color:#7FE7C9;border-color:rgba(127,231,201,0.4);display:inline-flex;align-items:center;gap:7px;}
+  .chip.live::before{content:"";width:7px;height:7px;border-radius:50%;background:#7FE7C9;animation:live 1.8s infinite;}
+
+  .case-hero{display:grid;grid-template-columns:1.5fr 0.85fr;gap:34px;padding:32px 30px;align-items:center;}
+  .case-hero h3{font-size:clamp(23px,2.8vw,30px);color:var(--paper);max-width:24ch;line-height:1.18;}
+  .case-hook{color:#BCC6CC;font-size:17px;margin:16px 0 24px;max-width:58ch;line-height:1.6;}
+  .case-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+  .launch{display:inline-flex;align-items:center;gap:10px;background:#0E7D67;color:#fff;font-weight:600;font-size:15px;padding:13px 22px;border-radius:999px;transition:transform .2s,background .2s;font-family:"Inter";}
+  .launch:hover{background:#12967d;transform:translateY(-2px);}
+  .launch svg{width:16px;height:16px;}
+  .case-note{font-family:"Space Mono";font-size:11.5px;color:#6C7880;}
+
+  .device{justify-self:center;width:100%;max-width:250px;border-radius:34px;padding:9px;background:linear-gradient(160deg,#2A333B,#12171B);border:1px solid #333d45;box-shadow:0 30px 60px -30px rgba(0,0,0,0.8);position:relative;display:block;transition:transform .3s;}
+  .device:hover{transform:translateY(-6px) rotate(-0.6deg);}
+  .device::before{content:"";position:absolute;top:16px;left:50%;transform:translateX(-50%);width:52px;height:5px;border-radius:99px;background:#0b0e11;z-index:3;}
+  .device .screen{border-radius:26px;overflow:hidden;aspect-ratio:250/500;background:#0d0d0f center top/cover no-repeat;position:relative;}
+  .device .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,0.55));opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px;}
+  .device:hover .overlay{opacity:1;}
+  .device .overlay span{font-family:"Space Mono";font-size:11px;color:#fff;background:rgba(14,125,103,0.9);padding:6px 14px;border-radius:999px;}
+
+  .case-body{padding:0 30px 30px;}
+  .case-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:0;border:1px solid var(--dark-line);border-radius:12px;overflow:hidden;}
+  .cg-cell{padding:22px 24px;border-right:1px solid var(--dark-line);}
+  .cg-cell:last-child{border-right:none;}
+  .cg-label{font-family:"Space Mono";font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:#5FBFA6;margin-bottom:12px;}
+  .cg-cell p{margin-bottom:12px;color:#C6CFD5;font-size:15.5px;line-height:1.65;}
+  .cg-cell p:last-child{margin-bottom:0;}
+  .flow{list-style:none;padding:0;margin:0;counter-reset:step;}
+  .flow li{position:relative;padding:0 0 16px 40px;color:#C6CFD5;font-size:15.5px;line-height:1.6;}
+  .flow li:last-child{padding-bottom:0;}
+  .flow li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:-2px;width:26px;height:26px;border-radius:8px;background:rgba(95,191,166,0.12);border:1px solid rgba(95,191,166,0.4);color:#7FD3BC;font-family:"Space Mono";font-size:12px;display:flex;align-items:center;justify-content:center;}
+  .flow li b{color:var(--paper);font-weight:600;}
+  .metrics{margin-top:22px;border:1px solid var(--dark-line);border-radius:12px;overflow:hidden;}
+  .metrics-head{padding:12px 20px;font-family:"Space Mono";font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#85929A;border-bottom:1px solid var(--dark-line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px 14px;}
+  .metric-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--dark-line);}
+  .metric-row:last-child{border-bottom:none;}
+  .metric-row .ml{font-size:15px;color:#C6CFD5;}
+  .metric-row .ml b{color:var(--paper);font-weight:600;}
+  .metric-row .mv{font-family:"Space Mono";font-size:11.5px;color:#7FD3BC;white-space:nowrap;padding:4px 10px;border:1px solid rgba(95,191,166,0.3);border-radius:999px;}
+  .metric-row .mv.north{color:#E7B65A;border-color:rgba(231,182,90,0.35);}
+
+  /* EXPERIENCE */
+  .xp{display:grid;grid-template-columns:0.4fr 1.6fr;gap:40px;}
+  .xp-card{border:1px solid var(--line);border-radius:var(--r);background:var(--paper-2);padding:32px 30px;}
+  .xp-role{font-size:23px;margin-bottom:6px;}
+  .xp-meta{font-family:"Space Mono";font-size:12.5px;color:var(--ink-soft);letter-spacing:0.03em;margin-bottom:22px;}
+  .xp-list{list-style:none;padding:0;margin:0;}
+  .xp-list li{position:relative;padding-left:26px;margin-bottom:14px;color:var(--ink-soft);font-size:15.5px;line-height:1.6;}
+  .xp-list li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:2px;background:var(--emerald);transform:rotate(45deg);}
+  .xp-list li b{color:var(--ink);font-weight:600;}
+  .xp-side .eyebrow{display:block;margin-bottom:10px;}
+  .xp-side p{color:var(--ink-soft);font-size:15.5px;line-height:1.62;}
+
+  /* SKILLS */
+  .skill-groups{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .skill-card{border:1px solid var(--line);border-radius:var(--r);padding:26px;background:linear-gradient(180deg,#FBFAF5,#F2EFE6);}
+  .skill-card h3{font-family:"Space Mono";font-weight:700;letter-spacing:0.03em;text-transform:uppercase;color:var(--emerald);font-size:12.5px;margin-bottom:16px;}
+  .tags{display:flex;flex-wrap:wrap;gap:9px;}
+  .tag{font-size:14px;font-weight:500;padding:7px 13px;border-radius:8px;background:var(--paper);border:1px solid var(--line);color:var(--ink);}
+
+  /* EDUCATION */
+  .edu{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .edu-card{border:1px solid var(--line);border-radius:var(--r);padding:28px;background:var(--paper-2);}
+  .edu-card .yr{font-family:"Space Mono";font-size:12px;color:var(--gold);letter-spacing:0.04em;}
+  .edu-card h3{font-size:21px;margin:12px 0 6px;}
+  .edu-card p{color:var(--ink-soft);font-size:15.5px;}
+
+  /* CONTACT */
+  .contact{background:var(--dark);color:var(--paper);text-align:center;}
+  .contact h2{font-size:clamp(29px,4.4vw,50px);color:var(--paper);max-width:20ch;margin:18px auto 0;line-height:1.14;}
+  .contact p{color:var(--dark-soft);max-width:52ch;margin:20px auto 0;font-size:18px;line-height:1.6;}
+  .contact .eyebrow{color:#5FBFA6;}
+  .contact-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:36px;}
+  .contact .btn-primary{background:#0E7D67;}
+  .contact .btn-ghost{border-color:var(--dark-line);color:var(--paper);}
+  .contact .btn-ghost:hover{border-color:#5FBFA6;}
+  .contact-meta{margin-top:44px;font-family:"Space Mono";font-size:13px;color:var(--dark-soft);display:flex;gap:22px;justify-content:center;flex-wrap:wrap;}
+  .contact-meta a:hover{color:#5FBFA6;}
+  footer{background:var(--dark);color:#6C7880;font-family:"Space Mono";font-size:12px;text-align:center;padding:28px 0;border-top:1px solid var(--dark-line);letter-spacing:0.04em;}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* RESPONSIVE */
+  @media(max-width:880px){
+    .nav-links{position:fixed;inset:66px 0 auto 0;background:var(--paper);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:10px 0;display:none;}
+    .nav-links.open{display:flex;}
+    .nav-links a{padding:13px 28px;width:100%;}
+    .nav-links .nav-cta{margin:10px 28px;text-align:center;}
+    .menu-btn{display:block;}
+    .ledger-grid{grid-template-columns:repeat(2,1fr);}
+    .ledger-cell:nth-child(2){border-right:none;}
+    .proto-thumbs{grid-template-columns:repeat(2,1fr);}
+    .pillars,.skill-groups,.edu{grid-template-columns:1fr;}
+    .case-hero{grid-template-columns:1fr;gap:26px;}
+    .device{grid-row:1;max-width:220px;}
+    .case-grid{grid-template-columns:1fr;}
+    .cg-cell{border-right:none;border-bottom:1px solid var(--dark-line);}
+    .cg-cell:last-child{border-bottom:none;}
+    .xp{grid-template-columns:1fr;gap:24px;}
+    section{padding:60px 0;}
+    .hero{padding:56px 0 44px;}
+  }
+  @media(max-width:520px){
+    .ledger-grid,.proto-thumbs{grid-template-columns:1fr;}
+    .ledger-cell{border-right:none;border-bottom:1px solid var(--line);}
+    .ledger-cell:last-child{border-bottom:none;}
+  }
+  @media(max-width:440px){
+    body{font-size:16.5px;}
+    .wrap{padding:0 20px;}
+    .hero{padding:44px 0 40px;}
+    .hero h1{font-size:clamp(30px,8.5vw,44px);}
+    .hero-sub{font-size:16.5px;}
+    .proto-strip{padding:18px 16px;}
+    .proto-strip-top .s{font-size:13.5px;}
+    .ledger-cell,.pillar,.skill-card,.edu-card,.xp-card{padding:22px 20px;}
+    .case-top,.case-hero,.case-body{padding-left:20px;padding-right:20px;}
+    .case-hero{padding-top:26px;padding-bottom:26px;}
+    .cg-cell{padding:20px 18px;}
+    .metric-row{padding:13px 16px;gap:10px;flex-wrap:wrap;}
+    .metrics-head{padding:11px 16px;}
+    .sec-head h2{font-size:clamp(24px,7vw,30px);}
+    .contact-meta{gap:10px 18px;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;}
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand"><span class="dot"></span>Muskan Gupta</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#approach">How I work</a>
+      <a href="#work">Case studies</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact" class="nav-cta">Get in touch</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-eyebrow eyebrow reveal"><span class="pulse"></span>Product Manager · Fintech, Analytics &amp; SaaS · Bengaluru</div>
+    <h1 class="reveal">I take unclear problems and turn them into products people <span class="accent">actually use.</span></h1>
+    <p class="hero-sub reveal">I have an MBA in Finance and Data Analytics and a habit of building things. I dig into messy user and business problems, work out which numbers actually matter, and design flows that people finish. Then I build them into working prototypes you can click through right now.</p>
+    <div class="hero-actions reveal">
+      <a href="#work" class="btn btn-primary">See my case studies
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="Muskan_Gupta_Resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">Download résumé
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg></a>
+    </div>
+
+    <!-- LIVE PROTOTYPE STRIP -->
+    <div class="proto-strip reveal">
+      <div class="proto-strip-top">
+        <span class="live-dot"></span>
+        <span class="t">Four working prototypes</span>
+        <span class="s">I designed and built each one. Tap any phone to try it in your browser.</span>
+      </div>
+      <div class="proto-thumbs">
+        <a class="pthumb" href="https://muskangupta2328-bot.github.io/phonepe-payment-recall-/" target="_blank" rel="noopener">
+          <div class="shot" style="background-image:url('assets/phonepe.png')"></div>
+          <div class="cap"><b>PhonePe Recall</b><span>UPI</span></div>
+        </a>
+        <a class="pthumb" href="https://muskangupta2328-bot.github.io/CRED-Auto-Split-Engine-/" target="_blank" rel="noopener">
+          <div class="shot" style="background-image:url('assets/cred.png')"></div>
+          <div class="cap"><b>CRED Social Sync</b><span>Credit</span></div>
+        </a>
+        <a class="pthumb" href="https://muskangupta2328-bot.github.io/Splitwise-Smart-Sync-Settlement-/" target="_blank" rel="noopener">
+          <div class="shot" style="background-image:url('assets/splitwise.png')"></div>
+          <div class="cap"><b>Splitwise Sync</b><span>Payments</span></div>
+        </a>
+        <a class="pthumb" href="https://www.figma.com/make/beCQhD7rH56MnWNqXy4J2u/Mood-Pulse-Widget-Placement?t=LIpAywuUtwuhDD9A-1" target="_blank" rel="noopener">
+          <div class="shot" style="background-image:url('assets/zomato-mood-pulse.png');background-size:cover;background-position:center"></div>
+          <div class="cap"><b>Zomato Mood-Pulse</b><span>Figma</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- identity ledger -->
+    <div class="ledger reveal">
+      <div class="ledger-head"><span>At a glance</span><span class="avail">Open to APM / PM roles</span></div>
+      <div class="ledger-grid">
+        <div class="ledger-cell"><div class="k">Role</div><div class="v">Product &amp; Strategy</div></div>
+        <div class="ledger-cell"><div class="k">Focus</div><div class="v">Fintech, Payments, Analytics</div></div>
+        <div class="ledger-cell"><div class="k">Based in</div><div class="v">Bengaluru, India</div></div>
+        <div class="ledger-cell"><div class="k">Education</div><div class="v">MBA, Finance &amp; Analytics</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section id="approach">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">How I work</span>
+      <h2>I think like an analyst and build like an owner.</h2>
+      <p>Good product sense is only half of it. The other half is a repeatable way to find the right problem, and the discipline to test my thinking by actually building the fix.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal"><span class="num">01 / Discovery</span><h3>Framing the problem</h3><p>I take a vague user or business complaint and turn it into a clear problem statement and a few hypotheses worth testing, before anyone writes a spec.</p></div>
+      <div class="pillar reveal"><span class="num">02 / Data</span><h3>Metrics that matter</h3><p>I decide what success looks like, build the dashboards in SQL and Power BI, and let the data pick what to do next instead of the loudest person in the room.</p></div>
+      <div class="pillar reveal"><span class="num">03 / Business</span><h3>A finance point of view</h3><p>Years in finance mean budgeting, forecasting and unit economics come naturally, so every feature ties back to a number the business actually cares about.</p></div>
+      <div class="pillar reveal"><span class="num">04 / Delivery</span><h3>Ship it, then show it</h3><p>I write clear PRDs and roadmaps, and I build clickable prototypes so a stakeholder review is something people can try for themselves, instead of reading it off a slide.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDIES -->
+<section class="cases" id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Selected product work</span>
+      <h2>Four problems I found, framed, and built into live prototypes.</h2>
+      <p>Each of these started as something small that bothered me or someone I know. I dug into the problem, worked out a product strategy, decided how I would measure it, and built a demo you can tap through.</p>
+    </div>
+
+    <!-- CASE 1: UPI Recall -->
+    <article class="case reveal">
+      <div class="case-top">
+        <span class="case-domain">Fintech · UPI · Trust &amp; Safety</span>
+        <span class="chip live">Live prototype</span>
+        <span class="case-ref">Case 01</span>
+      </div>
+      <div class="case-hero">
+        <div>
+          <h3>Getting misdirected UPI money back, without giving up your privacy</h3>
+          <p class="case-hook">You pay the wrong person by accident. Today there is no safe way to ask for it back. This flow fixes that without ever sharing a phone number.</p>
+          <div class="case-cta">
+            <a class="launch" href="https://muskangupta2328-bot.github.io/phonepe-payment-recall-/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Try the live prototype</a>
+            <span class="case-note">Opens in a new tab</span>
+          </div>
+        </div>
+        <a class="device" href="https://muskangupta2328-bot.github.io/phonepe-payment-recall-/" target="_blank" rel="noopener" aria-label="Open PhonePe Recall prototype">
+          <div class="screen" style="background-image:url('assets/phonepe.png')"><div class="overlay"><span>▶ Tap to try</span></div></div>
+        </a>
+      </div>
+      <div class="case-body">
+        <div class="case-grid">
+          <div class="cg-cell">
+            <div class="cg-label">Where it breaks</div>
+            <p>UPI apps show you a verified name but never a number. That is deliberate privacy protection under India's DPDP rules. The trouble starts when a payment goes to the wrong but real person, because the same protection now leaves the sender with no way to reach them.</p>
+            <p>Banks and NPCI will not step in either. An authorised transfer to a valid ID is not fraud, so there is no dispute process. You have a name, maybe a photo, and no legal way to ask for your own money back.</p>
+          </div>
+          <div class="cg-cell">
+            <div class="cg-label">Who feels it · Riya, 45, Pune</div>
+            <p>She paid ₹4,000 to a saved contact called "Plumber Ramesh", not knowing the number had been reassigned to a stranger months ago.</p>
+            <p>She wants her money back, but she refuses any workaround that hands her personal number to someone she does not know.</p>
+          </div>
+        </div>
+        <div class="cg-label" style="margin:24px 0 14px;">The fix: PhonePe acts as the go-between</div>
+        <ul class="flow">
+          <li><b>Report.</b> The sender taps "This wasn't who I meant to pay" right on the payment receipt.</li>
+          <li><b>Relay.</b> PhonePe sends the recipient a fixed template message: "A sender thinks this ₹4,000 payment was a mistake." No numbers, no names.</li>
+          <li><b>Resolve.</b> The recipient can refund in one tap through the same payment rails, or decline.</li>
+          <li><b>Guardrails.</b> One template request per payment and no open chat, so it cannot be turned into harassment or a scam.</li>
+        </ul>
+        <div class="metrics">
+          <div class="metrics-head"><span>How I would measure it</span><span>Pilot: under ₹2,000, reviewed by hand</span></div>
+          <div class="metric-row"><span class="ml"><b>Disputes resolved without sharing any personal details</b></span><span class="mv north">Main metric</span></div>
+          <div class="metric-row"><span class="ml">How often recipients respond to a request</span><span class="mv">Supporting</span></div>
+          <div class="metric-row"><span class="ml">Time from report to refund</span><span class="mv">Supporting</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CASE 2: CRED -->
+    <article class="case reveal">
+      <div class="case-top">
+        <span class="case-domain">Fintech · Credit · Payments</span>
+        <span class="chip live">Live prototype</span>
+        <span class="case-ref">Case 02</span>
+      </div>
+      <div class="case-hero">
+        <div>
+          <h3>CRED: split a big card spend and let it settle itself</h3>
+          <p class="case-hook">Big purchase on your card, then the awkward job of chasing friends for their share. This feature does the chasing for you and clears your bill as the money comes in.</p>
+          <div class="case-cta">
+            <a class="launch" href="https://muskangupta2328-bot.github.io/CRED-Auto-Split-Engine-/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Try the live prototype</a>
+            <span class="case-note">Opens in a new tab</span>
+          </div>
+        </div>
+        <a class="device" href="https://muskangupta2328-bot.github.io/CRED-Auto-Split-Engine-/" target="_blank" rel="noopener" aria-label="Open CRED Social Sync prototype">
+          <div class="screen" style="background-image:url('assets/cred.png')"><div class="overlay"><span>▶ Tap to try</span></div></div>
+        </a>
+      </div>
+      <div class="case-body">
+        <div class="case-grid">
+          <div class="cg-cell">
+            <div class="cg-label">The real barrier</div>
+            <p>The hard part of group payments is not the money, it is how awkward it feels to ask for it. So this design takes the chaser and the debtor out of the equation and lets the system handle settlement quietly in the background.</p>
+          </div>
+          <div class="cg-cell">
+            <div class="cg-label">Two people, one flow</div>
+            <p><b style="color:var(--paper)">The host</b> wants the card points but hates asking friends for money. They need settlement that just happens and clears the bill.</p>
+            <p><b style="color:var(--paper)">The guest</b> is happy to pay their share but forgets to check WhatsApp for the amount. They need a one-tap nudge, then pay and forget.</p>
+          </div>
+        </div>
+        <div class="cg-label" style="margin:24px 0 14px;">The flow: spot it, split it, collect it, credit it</div>
+        <ul class="flow">
+          <li><b>Spot.</b> CRED flags a large charge, say "Indigo Airlines, ₹45,000", and asks "Split this with your group?"</li>
+          <li><b>Split.</b> You pick the contacts and set each person's share.</li>
+          <li><b>Collect.</b> CRED sends each of them a UPI collect request.</li>
+          <li><b>Credit.</b> As payments land they go straight onto that exact card charge. A bit of backend SQL matches each UPI payment to the right transaction.</li>
+        </ul>
+        <div class="metrics">
+          <div class="metrics-head"><span>How I would measure it</span><span>Reminders timed to the card due date</span></div>
+          <div class="metric-row"><span class="ml"><b>Credit health</b>, keeping users under their 30% limit</span><span class="mv north">Main metric</span></div>
+          <div class="metric-row"><span class="ml">Bills fully settled within 48 hours</span><span class="mv">Primary</span></div>
+          <div class="metric-row"><span class="ml">How often people open CRED each week</span><span class="mv">Business</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CASE 3: Splitwise -->
+    <article class="case reveal">
+      <div class="case-top">
+        <span class="case-domain">Fintech · Payments · Retention</span>
+        <span class="chip live">Live prototype</span>
+        <span class="case-ref">Case 03</span>
+      </div>
+      <div class="case-hero">
+        <div>
+          <h3>Splitwise: close the gap between paying and marking it paid</h3>
+          <p class="case-hook">People pay each other over UPI, then forget to open Splitwise and mark it settled. Balances drift, and that quietly pushes people off the app.</p>
+          <div class="case-cta">
+            <a class="launch" href="https://muskangupta2328-bot.github.io/Splitwise-Smart-Sync-Settlement-/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Try the live prototype</a>
+            <span class="case-note">Opens in a new tab</span>
+          </div>
+        </div>
+        <a class="device" href="https://muskangupta2328-bot.github.io/Splitwise-Smart-Sync-Settlement-/" target="_blank" rel="noopener" aria-label="Open Splitwise Smart-Sync prototype">
+          <div class="screen" style="background-image:url('assets/splitwise.png')"><div class="overlay"><span>▶ Tap to try</span></div></div>
+        </a>
+      </div>
+      <div class="case-body">
+        <div class="case-grid">
+          <div class="cg-cell">
+            <div class="cg-label">The friction</div>
+            <p>Someone leaves Splitwise to pay over UPI, then never comes back to hit "Mark as Settled". Balances end up wrong, which causes real friction between friends and slowly kills the habit of using the app.</p>
+          </div>
+          <div class="cg-cell">
+            <div class="cg-label">The idea · Smart-Sync</div>
+            <p>Smart-Sync watches for a UPI payment, through GPay or PhonePe deep-links, that matches an open expense. When it finds one, it shows a single "Confirm settlement?" prompt.</p>
+            <p>That turns a manual chore into something automatic, so the balances stay right in real time.</p>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="metrics-head"><span>How I would measure it</span><span>Pitched as a Splitwise Pro upgrade</span></div>
+          <div class="metric-row"><span class="ml"><b>Settlement speed</b>, how long a debt sits open</span><span class="mv north">Primary</span></div>
+          <div class="metric-row"><span class="ml">Whether accurate balances bring people back more often</span><span class="mv">Secondary</span></div>
+          <div class="metric-row"><span class="ml">Share of settlements via Smart-Sync vs. done by hand</span><span class="mv">Guardrail</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CASE 4: Zomato -->
+    <article class="case reveal">
+      <div class="case-top">
+        <span class="case-domain">Consumer · Discovery · Personalisation</span>
+        <span class="chip live">Figma prototype</span>
+        <span class="case-ref">Case 04</span>
+      </div>
+      <div class="case-hero">
+        <div>
+          <h3>Zomato: fixing the 6pm "what should I even eat" problem</h3>
+          <p class="case-hook">You open a food app hungry, then scroll for twenty minutes and give up. You do not need another cuisine filter. You need something that gets what kind of day you are having.</p>
+          <div class="case-cta">
+            <a class="launch" href="https://www.figma.com/make/beCQhD7rH56MnWNqXy4J2u/Mood-Pulse-Widget-Placement?t=LIpAywuUtwuhDD9A-1" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Open the Figma mockup</a>
+            <span class="case-note">Interactive, opens in a new tab</span>
+          </div>
+        </div>
+        <a class="device" href="https://www.figma.com/make/beCQhD7rH56MnWNqXy4J2u/Mood-Pulse-Widget-Placement?t=LIpAywuUtwuhDD9A-1" target="_blank" rel="noopener" aria-label="Open Zomato Mood-Pulse mockup">
+          <div class="screen" style="background-image:url('assets/zomato-mood-pulse.png');background-size:cover;background-position:center"><div class="overlay"><span>▶ Tap to try</span></div></div>
+        </a>
+      </div>
+      <div class="case-body">
+        <div class="case-grid">
+          <div class="cg-cell">
+            <div class="cg-label">The real problem</div>
+            <p>Food apps work like search engines. They assume you already know what you want. But people do not order food by keyword, they order by mood and by whatever kind of day they have had.</p>
+          </div>
+          <div class="cg-cell">
+            <div class="cg-label">The feature · a three-question flow</div>
+            <p>It reads the moment in three quick taps. Energy: celebrating, working, or wiped out. Risk: your usual comfort or something new. Portion: a light snack or a full feast.</p>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="metrics-head"><span>What it should do</span><span>Cuts 1,000+ options down to about five good ones</span></div>
+          <div class="metric-row"><span class="ml"><b>Time to order</b>, from fewer but better choices</span><span class="mv north">Primary</span></div>
+          <div class="metric-row"><span class="ml">Retention, if it earns a spot as your go-to app</span><span class="mv">Secondary</span></div>
+          <div class="metric-row"><span class="ml">Mood data that makes recommendations sharper over time</span><span class="mv">Long term</span></div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">Where I built the muscle</span><h2>Experience</h2></div>
+    <div class="xp">
+      <div class="xp-side reveal">
+        <span class="eyebrow">Why it counts for PM</span>
+        <p>A finance analyst job is closer to product than it looks. You gather requirements, chase down why the numbers do not add up, and turn a mess of data into something leaders can act on.</p>
+      </div>
+      <div class="xp-card reveal">
+        <h3 class="xp-role">Associate, Financial Analyst at Give</h3>
+        <div class="xp-meta">BENGALURU · JUN 2025 – MAR 2026</div>
+        <ul class="xp-list">
+          <li>Validated and reconciled <b>financial data</b> across reporting datasets, so the numbers stakeholders relied on were actually correct.</li>
+          <li>Ran <b>root-cause analysis</b> on reporting gaps and worked with teams across the company to sort out the exceptions.</li>
+          <li>Owned <b>variance and trend analysis</b> to catch unusual patterns and flag them for the people making decisions.</li>
+          <li>Built <b>automated Excel reports and Power BI dashboards</b> that made reporting faster and easier to read.</li>
+          <li>Sat with business stakeholders to gather and check <b>reporting requirements</b>, and kept improving the process.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" style="background:linear-gradient(180deg,#F5F3EC,#EFECE2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">Toolkit</span><h2>Skills and tools</h2></div>
+    <div class="skill-groups">
+      <div class="skill-card reveal"><h3>Product management</h3><div class="tags">
+        <span class="tag">Product Discovery</span><span class="tag">User Research</span><span class="tag">PRD Writing</span>
+        <span class="tag">Prioritisation (RICE, MoSCoW)</span><span class="tag">User Journey Mapping</span></div></div>
+      <div class="skill-card reveal"><h3>Data and analytics</h3><div class="tags">
+        <span class="tag">Product KPIs &amp; Metrics</span><span class="tag">SQL</span><span class="tag">Power BI</span>
+        <span class="tag">Advanced Excel &amp; Financial Modeling</span><span class="tag">Variance Analysis</span></div></div>
+      <div class="skill-card reveal"><h3>Business and strategy</h3><div class="tags">
+        <span class="tag">Stakeholder Management</span><span class="tag">Market &amp; Competitive Analysis</span>
+        <span class="tag">GTM Strategy</span><span class="tag">Cross-Functional Collaboration</span></div></div>
+      <div class="skill-card reveal"><h3>Ways of working and AI</h3><div class="tags">
+        <span class="tag">Agile / Scrum</span><span class="tag">Google Sheets</span><span class="tag">Notion</span>
+        <span class="tag">ChatGPT</span><span class="tag">Claude</span><span class="tag">Perplexity</span></div></div>
+    </div>
+    <div class="edu" style="margin-top:26px;">
+      <div class="edu-card reveal"><div class="yr">AUG 2023 – MAY 2025</div><h3>MBA, Finance &amp; Data Analytics</h3><p>Prestige Institute of Management and Research, Indore</p></div>
+      <div class="edu-card reveal"><div class="yr">AUG 2019 – MAY 2022</div><h3>Bachelor of Commerce</h3><p>Idyllic Institute of Management, Indore</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <span class="eyebrow reveal">Let's talk</span>
+    <h2 class="reveal">Hiring an APM or PM who thinks in problems, data, and money?</h2>
+    <p class="reveal">I am looking for APM and PM roles in fintech, analytics and SaaS. If you are hiring, or you just want to compare notes on payments products, I would love to hear from you.</p>
+    <div class="contact-actions reveal">
+      <a href="mailto:muskangupta.2328@gmail.com" class="btn btn-primary">Email me
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></a>
+      <a href="Muskan_Gupta_Resume.pdf" target="_blank" rel="noopener" class="btn btn-ghost">Download résumé</a>
+      <a href="https://www.linkedin.com/in/muskan-gupta-9b29991bb" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
+    </div>
+    <div class="contact-meta reveal">
+      <a href="mailto:muskangupta.2328@gmail.com">muskangupta.2328@gmail.com</a>
+      <a href="tel:+918839062051">+91 88390 62051</a>
+      <span>Bengaluru, India</span>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 Muskan Gupta · Product &amp; Strategy</footer>
+
+<script>
+  const menuBtn=document.getElementById('menuBtn');
+  const navLinks=document.getElementById('navLinks');
+  menuBtn.addEventListener('click',()=>navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>navLinks.classList.remove('open')));
+  const io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(Math.min(i%4,3)*70)+'ms';io.observe(el);});
+</script>
+</body>
+</html>
