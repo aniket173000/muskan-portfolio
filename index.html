@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Muskan Gupta · Product Manager · Fintech, Analytics & SaaS</title>
-<meta name="description" content="Product manager focused on fintech, payments and analytics. MBA in Finance & Data Analytics. Four case studies, each with a live prototype you can click through." />
+<title>Muskan Gupta · Product Analyst · APM · Product Manager</title>
+<meta name="description" content="Product professional open to Product Analyst, APM, PM and Product Owner roles — full-time or internship, across any domain. MBA in Finance & Data Analytics. Four case studies spanning payments, credit, consumer and food-tech, each with a live prototype you can click through." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -32,10 +32,29 @@
   .nav-links{display:flex;gap:30px;align-items:center;}
   .nav-links a{font-size:15px;color:var(--ink-soft);font-weight:500;transition:color .2s;}
   .nav-links a:hover{color:var(--ink);}
-  .nav-cta{background:var(--ink);color:var(--paper);padding:9px 18px;border-radius:999px;font-weight:600;font-size:14.5px;transition:transform .2s,background .2s;}
-  .nav-cta:hover{background:var(--emerald);transform:translateY(-1px);color:#fff;}
+  .nav-links a.nav-cta{background:var(--emerald);color:#fff;padding:9px 18px;border-radius:999px;font-weight:700;font-size:14.5px;transition:transform .2s,background .2s,box-shadow .2s;box-shadow:0 4px 14px -6px rgba(12,107,88,0.5);}
+  .nav-links a.nav-cta:hover{background:var(--emerald-2);transform:translateY(-1px);color:#fff;box-shadow:0 8px 20px -8px rgba(12,107,88,0.6);}
   .menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:9px;padding:8px 10px;cursor:pointer;}
   .menu-btn span{display:block;width:20px;height:2px;background:var(--ink);margin:4px 0;}
+
+  /* AVAILABILITY BAR */
+  .avail-bar{background:linear-gradient(90deg,#0C6B58,#0E7D67);color:#fff;position:relative;z-index:60;overflow:hidden;animation:abIn .65s cubic-bezier(.2,.7,.2,1);}
+  .avail-bar::after{content:"";position:absolute;top:0;left:-40%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);animation:abShine 5.5s ease-in-out infinite;}
+  @keyframes abIn{from{transform:translateY(-100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  @keyframes abShine{0%{left:-40%;}55%,100%{left:120%;}}
+  .avail-inner{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;min-height:46px;padding-top:8px;padding-bottom:8px;flex-wrap:wrap;position:relative;z-index:1;}
+  .avail-msg{display:inline-flex;align-items:center;gap:10px;font-size:13.5px;line-height:1.45;}
+  .avail-msg b{font-family:"Space Grotesk";font-weight:700;letter-spacing:0.01em;}
+  .avail-msg .ab-sep{color:rgba(255,255,255,0.55);}
+  .ab-dot{width:8px;height:8px;border-radius:50%;background:#7FE7C9;flex:none;box-shadow:0 0 0 0 rgba(127,231,201,0.7);animation:live 1.8s infinite;}
+  .avail-actions{display:inline-flex;align-items:center;gap:8px;}
+  .avail-actions a{font-family:"Space Mono";font-size:11px;letter-spacing:0.05em;text-transform:uppercase;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:6px 13px;border-radius:999px;transition:background .2s,transform .2s;}
+  .avail-actions a:hover{background:rgba(255,255,255,0.28);transform:translateY(-1px);}
+  .ab-close{background:none;border:none;color:#CDEDE4;font-size:19px;line-height:1;cursor:pointer;padding:3px 7px;border-radius:7px;transition:color .2s,background .2s;}
+  .ab-close:hover{color:#fff;background:rgba(255,255,255,0.16);}
+  .avail-bar.hide{display:none;}
+  @media(max-width:640px){.avail-msg .ab-tail{display:none;}}
+  @media(max-width:440px){.avail-inner{min-height:0;}.avail-msg{font-size:12.5px;}}
 
   /* HERO */
   .hero{padding:90px 0 60px;}
@@ -239,6 +258,21 @@
 </head>
 <body>
 
+<!-- AVAILABILITY BAR -->
+<div class="avail-bar" id="availBar">
+  <div class="wrap avail-inner">
+    <span class="avail-msg">
+      <span class="ab-dot"></span>
+      <span><b>Open to work</b> — actively interviewing<span class="ab-tail">, available immediately for full-time or internships across any domain</span></span>
+    </span>
+    <span class="avail-actions">
+      <a href="mailto:muskangupta.2328@gmail.com">Email me</a>
+      <a href="Muskan_Gupta_Resume.pdf" target="_blank" rel="noopener">Résumé</a>
+      <button class="ab-close" id="abClose" aria-label="Dismiss availability banner">&times;</button>
+    </span>
+  </div>
+</div>
+
 <!-- NAV -->
 <header class="nav">
   <div class="wrap nav-inner">
@@ -257,9 +291,9 @@
 <!-- HERO -->
 <section class="hero" id="top">
   <div class="wrap">
-    <div class="hero-eyebrow eyebrow reveal"><span class="pulse"></span>Product Manager · Fintech, Analytics &amp; SaaS · Bengaluru</div>
-    <h1 class="reveal">I take unclear problems and turn them into products people <span class="accent">actually use.</span></h1>
-    <p class="hero-sub reveal">I have an MBA in Finance and Data Analytics and a habit of building things. I dig into messy user and business problems, work out which numbers actually matter, and design flows that people finish. Then I build them into working prototypes you can click through right now.</p>
+    <div class="hero-eyebrow eyebrow reveal"><span class="pulse"></span>Product Analyst · APM · PM · Product Owner · Bengaluru</div>
+    <h1 class="reveal">Where business problems meet data and design — I build what <span class="accent">actually works.</span></h1>
+    <p class="hero-sub reveal">I have an MBA in Finance and Data Analytics and a habit of building things. Give me any domain — payments, consumer, SaaS or something brand new — and I dig into the messy user and business problem, work out which numbers actually matter, and design flows that people finish. Then I build them into working prototypes you can click through right now.</p>
     <div class="hero-actions reveal">
       <a href="#work" class="btn btn-primary">See my case studies
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
@@ -271,7 +305,7 @@
     <div class="proto-strip reveal">
       <div class="proto-strip-top">
         <span class="live-dot"></span>
-        <span class="t">Four working prototypes</span>
+        <span class="t">A few working prototypes</span>
         <span class="s">I designed and built each one. Tap any phone to try it in your browser.</span>
       </div>
       <div class="proto-thumbs">
@@ -296,10 +330,10 @@
 
     <!-- identity ledger -->
     <div class="ledger reveal">
-      <div class="ledger-head"><span>At a glance</span><span class="avail">Open to APM / PM roles</span></div>
+      <div class="ledger-head"><span>At a glance</span><span class="avail">Open to full-time &amp; internships</span></div>
       <div class="ledger-grid">
-        <div class="ledger-cell"><div class="k">Role</div><div class="v">Product &amp; Strategy</div></div>
-        <div class="ledger-cell"><div class="k">Focus</div><div class="v">Fintech, Payments, Analytics</div></div>
+        <div class="ledger-cell"><div class="k">Open to</div><div class="v">Product Analyst · APM · PM · Product Owner</div></div>
+        <div class="ledger-cell"><div class="k">Domains</div><div class="v">Any — fintech, consumer, SaaS &amp; more</div></div>
         <div class="ledger-cell"><div class="k">Based in</div><div class="v">Bengaluru, India</div></div>
         <div class="ledger-cell"><div class="k">Education</div><div class="v">MBA, Finance &amp; Analytics</div></div>
       </div>
@@ -317,7 +351,7 @@
     </div>
     <div class="pillars">
       <div class="pillar reveal"><span class="num">01 / Discovery</span><h3>Framing the problem</h3><p>I take a vague user or business complaint and turn it into a clear problem statement and a few hypotheses worth testing, before anyone writes a spec.</p></div>
-      <div class="pillar reveal"><span class="num">02 / Data</span><h3>Metrics that matter</h3><p>I decide what success looks like, build the dashboards in SQL and Power BI, and let the data pick what to do next instead of the loudest person in the room.</p></div>
+      <div class="pillar reveal"><span class="num">02 / Data</span><h3>Metrics that matter</h3><p>I define what success actually means, build the dashboards in SQL and Power BI to track it, and let the numbers settle the debate — so decisions follow the evidence, not the loudest voice in the room.</p></div>
       <div class="pillar reveal"><span class="num">03 / Business</span><h3>A finance point of view</h3><p>Years in finance mean budgeting, forecasting and unit economics come naturally, so every feature ties back to a number the business actually cares about.</p></div>
       <div class="pillar reveal"><span class="num">04 / Delivery</span><h3>Ship it, then show it</h3><p>I write clear PRDs and roadmaps, and I build clickable prototypes so a stakeholder review is something people can try for themselves, instead of reading it off a slide.</p></div>
     </div>
@@ -330,7 +364,7 @@
     <div class="sec-head reveal">
       <span class="eyebrow">Selected product work</span>
       <h2>Four problems I found, framed, and built into live prototypes.</h2>
-      <p>Each of these started as something small that bothered me or someone I know. I dug into the problem, worked out a product strategy, decided how I would measure it, and built a demo you can tap through.</p>
+      <p>Each of these started as something small that bothered me or someone I know — across payments, credit, consumer and food-tech. I dug into the problem, worked out a product strategy, decided how I would measure it, and built a demo you can tap through. Different domains, same method.</p>
     </div>
 
     <!-- CASE 1: UPI Recall -->
@@ -362,7 +396,7 @@
             <p>Banks and NPCI will not step in either. An authorised transfer to a valid ID is not fraud, so there is no dispute process. You have a name, maybe a photo, and no legal way to ask for your own money back.</p>
           </div>
           <div class="cg-cell">
-            <div class="cg-label">Who feels it · Riya, 45, Pune</div>
+            <div class="cg-label">Who feels it · Meera, 45, Pune</div>
             <p>She paid ₹4,000 to a saved contact called "Plumber Ramesh", not knowing the number had been reassigned to a stranger months ago.</p>
             <p>She wants her money back, but she refuses any workaround that hands her personal number to someone she does not know.</p>
           </div>
@@ -524,8 +558,8 @@
     <div class="sec-head reveal"><span class="eyebrow">Where I built the muscle</span><h2>Experience</h2></div>
     <div class="xp">
       <div class="xp-side reveal">
-        <span class="eyebrow">Why it counts for PM</span>
-        <p>A finance analyst job is closer to product than it looks. You gather requirements, chase down why the numbers do not add up, and turn a mess of data into something leaders can act on.</p>
+        <span class="eyebrow">Why it counts for product</span>
+        <p>A finance analyst job is closer to product than it looks. You gather requirements, chase down why the numbers do not add up, and turn a mess of data into something leaders can act on — whichever domain you point it at.</p>
       </div>
       <div class="xp-card reveal">
         <h3 class="xp-role">Associate, Financial Analyst at Give</h3>
@@ -571,8 +605,8 @@
 <section class="contact" id="contact">
   <div class="wrap">
     <span class="eyebrow reveal">Let's talk</span>
-    <h2 class="reveal">Hiring an APM or PM who thinks in problems, data, and money?</h2>
-    <p class="reveal">I am looking for APM and PM roles in fintech, analytics and SaaS. If you are hiring, or you just want to compare notes on payments products, I would love to hear from you.</p>
+    <h2 class="reveal">Hiring a Product Analyst, APM, PM or Product Owner?</h2>
+    <p class="reveal">I am open to Product Analyst, APM, PM and Product Owner roles — full-time or internship, and across any domain. If you are hiring, or you just want to compare notes on product, I would love to hear from you.</p>
     <div class="contact-actions reveal">
       <a href="mailto:muskangupta.2328@gmail.com" class="btn btn-primary">Email me
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></a>
@@ -590,6 +624,10 @@
 <footer>© 2026 Muskan Gupta · Product &amp; Strategy</footer>
 
 <script>
+  const availBar=document.getElementById('availBar');
+  const abClose=document.getElementById('abClose');
+  if(availBar&&localStorage.getItem('availDismissed')==='1'){availBar.classList.add('hide');}
+  if(abClose){abClose.addEventListener('click',()=>{availBar.classList.add('hide');try{localStorage.setItem('availDismissed','1');}catch(e){}});}
   const menuBtn=document.getElementById('menuBtn');
   const navLinks=document.getElementById('navLinks');
   menuBtn.addEventListener('click',()=>navLinks.classList.toggle('open'));
