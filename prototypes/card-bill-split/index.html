@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Sync — auto-split a card bill (concept prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --card:#161619;
+    --card-2:#1c1c20;
+    --gold:#cba876;
+    --gold-dim:rgba(203,168,118,0.15);
+    --teal:#4fd8b8;
+    --teal-dim:rgba(79,216,184,0.15);
+    --amber:#d99a4e;
+    --amber-dim:rgba(217,154,78,0.15);
+    --white:#f5f5f7;
+    --gray:#8a8a92;
+    --gray-dim:#55555c;
+    --divider:rgba(255,255,255,0.07);
+    --blue:#4a7bc9;
+    --purple:#9959c9;
+    --orange:#cc8a3d;
+    --green:#3fae8f;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:#050506;
+    font-family:'DM Sans',sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh;
+    padding:24px;
+    color:var(--white);
+  }
+  .device{
+    width:375px;
+    height:812px;
+    background:var(--bg);
+    border-radius:46px;
+    padding:12px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+    position:relative;
+  }
+  .frame{
+    width:100%; height:100%;
+    background:var(--bg);
+    border-radius:34px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 26px 4px; font-size:14px; font-weight:600; color:var(--white);
+    position:relative; z-index:40;
+  }
+  .statusbar .icons{ display:flex; align-items:center; gap:5px; }
+
+  .dots{
+    display:flex; gap:5px; justify-content:center;
+    padding:10px 0 0;
+    z-index:50;
+  }
+  .dot{ width:14px; height:4px; border-radius:2px; background:rgba(255,255,255,0.14); transition:all 0.3s ease; }
+  .dot.active{ width:22px; background:var(--gold); }
+
+  .screen{
+    position:absolute; inset:0;
+    padding:80px 22px 22px;
+    display:flex; flex-direction:column;
+    opacity:0; pointer-events:none; transform:translateX(20px);
+    transition:opacity 0.35s ease, transform 0.35s ease;
+    overflow-y:auto;
+  }
+  .screen.active{ opacity:1; pointer-events:auto; transform:translateX(0); }
+
+  .top-row{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .eyebrow{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gray); font-weight:600; }
+  .name{ font-size:24px; font-weight:700; margin-top:4px; }
+  .icon-btns{ display:flex; gap:8px; }
+  .icon-circle{ width:38px; height:38px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .avatar-circle{ background:var(--gold); color:#151108; font-weight:700; font-size:14px; }
+
+  .due-card{
+    margin-top:20px;
+    background:var(--card);
+    border:1px solid var(--divider);
+    border-radius:22px;
+    padding:22px;
+  }
+  .due-label{ font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--gray); font-weight:600; }
+  .due-amt{ font-size:34px; font-weight:700; margin-top:8px; }
+  .due-date{ font-size:12px; color:var(--gray); margin-top:4px; }
+  .due-date b{ color:var(--gray); font-weight:600; }
+  .btn-row{ display:flex; gap:10px; margin-top:16px; }
+  .btn{
+    flex:1; padding:10px 14px; border-radius:18px; border:none;
+    font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; text-align:center;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    min-height:auto; line-height:1.3;
+  }
+  .btn-primary{ background:var(--gold); color:#191308; }
+  .btn-ghost{ background:transparent; color:var(--white); border:1px solid var(--divider); }
+  .btn-white{ background:var(--white); color:#0a0a0b; }
+
+  .chips{ display:flex; gap:10px; margin-top:14px; }
+  .chip{ flex:1; background:var(--card); border:1px solid var(--divider); border-radius:16px; padding:14px 15px; }
+  .chip .label{ font-size:10px; letter-spacing:0.05em; text-transform:uppercase; color:var(--gray); font-weight:600; }
+  .chip .val{ font-size:17px; font-weight:700; margin-top:6px; }
+  .chip .sub{ font-size:10.5px; color:var(--gray-dim); margin-top:3px; }
+
+  .section-row{ display:flex; justify-content:space-between; align-items:center; margin:22px 0 8px; }
+  .section-label{ font-size:15px; font-weight:700; }
+  .see-all{ font-size:12px; color:var(--gold); font-weight:600; }
+
+  .txn{ display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--divider); }
+  .txn.tappable{ cursor:pointer; }
+  .txn-icon{ width:42px; height:42px; border-radius:12px; background:var(--card-2); display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+  .txn-body{ flex:1; min-width:0; }
+  .txn-name-row{ display:flex; align-items:center; gap:7px; }
+  .txn-name{ font-size:14px; font-weight:600; }
+  .txn-sub{ font-size:11.5px; color:var(--gray); margin-top:3px; }
+  .txn-amt{ font-size:14px; font-weight:600; }
+  .badge{ font-size:9.5px; font-weight:700; background:var(--gold-dim); color:var(--gold); padding:3px 8px; border-radius:20px; letter-spacing:0.02em; }
+
+  /* Screen 2 sheet */
+  .sheet-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); opacity:0; pointer-events:none; transition:opacity 0.3s ease; z-index:60; }
+  .sheet-backdrop.show{ opacity:1; pointer-events:auto; }
+  .sheet{
+    position:absolute; left:0; right:0; bottom:0;
+    background:#131316; border-radius:28px 28px 0 0;
+    padding:24px 24px 30px; transform:translateY(100%);
+    transition:transform 0.45s cubic-bezier(0.32,0.72,0,1); z-index:61;
+    border-top:1px solid var(--divider); text-align:center;
+  }
+  .sheet.show{ transform:translateY(0); }
+  .sheet-handle{ width:36px; height:4px; background:var(--gray-dim); border-radius:3px; margin:0 auto 20px; }
+  .avatars{ display:flex; justify-content:center; margin-bottom:18px; }
+  .avatar{ width:36px; height:36px; border-radius:50%; border:2px solid #131316; margin-left:-9px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; }
+  .avatar:first-child{ margin-left:0; }
+  .sheet-eyebrow{ font-size:11px; letter-spacing:0.08em; color:var(--gold); font-weight:700; text-transform:uppercase; }
+  .sheet-headline{ font-size:19px; font-weight:700; margin-top:8px; }
+  .sheet-sub{ font-size:13px; color:var(--gray); margin-top:6px; }
+  .sheet-tag{ display:inline-flex; gap:8px; align-items:center; margin-top:16px; background:var(--card-2); border-radius:12px; padding:10px 16px; font-size:14px; font-weight:600; }
+  .sheet-tag .people{ font-weight:400; color:var(--gray); font-size:12px; }
+  .sheet-actions{ margin-top:20px; }
+  .maybe-later{ text-align:center; font-size:13px; color:var(--gray); margin-top:14px; cursor:pointer; }
+
+  .merchant-hint{ display:flex; align-items:center; gap:8px; background:var(--card); border-radius:16px; padding:14px 15px; margin-top:14px; font-size:12.5px; color:var(--gray); }
+  .merchant-hint b{ color:var(--white); }
+
+  /* Screen 3 */
+  .header-row{ display:flex; align-items:center; gap:12px; }
+  .back-btn{ width:38px; height:38px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; flex-shrink:0; }
+  .header-title{ font-size:17px; font-weight:700; }
+  .header-sub{ font-size:12px; color:var(--gray); margin-top:2px; }
+
+  .selected-bar{ display:flex; justify-content:space-between; align-items:center; background:var(--gold-dim); border:1px solid rgba(203,168,118,0.25); border-radius:14px; padding:11px 14px; margin-top:16px; }
+  .selected-left{ display:flex; align-items:center; gap:8px; }
+  .selected-avatars{ display:flex; }
+  .selected-avatars .avatar{ width:22px; height:22px; font-size:9px; border-color:var(--bg); }
+  .selected-text{ font-size:12.5px; font-weight:600; color:var(--gold); }
+
+  .search{ margin-top:14px; background:var(--card); border:1px solid var(--divider); border-radius:14px; padding:12px 15px; font-size:13px; color:var(--gray); }
+
+  .friend{ display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid var(--divider); cursor:pointer; }
+  .friend-avatar{ width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; color:#fff; }
+  .friend-name{ flex:1; font-size:14px; font-weight:600; }
+  .friend-handle{ font-size:11.5px; color:var(--gray-dim); margin-top:2px; font-weight:400; }
+  .checkmark{ width:24px; height:24px; border-radius:50%; border:1.5px solid var(--gray-dim); display:flex; align-items:center; justify-content:center; font-size:12px; transition:all 0.2s ease; color:transparent; }
+  .checkmark.checked{ color:#fff; transform:scale(1.05); }
+
+  /* Screen 4 */
+  .summary-hero{ text-align:center; background:var(--card); border:1px solid var(--divider); border-radius:20px; padding:26px; margin-top:18px; }
+  .summary-hero .merchant-emoji{ font-size:20px; }
+  .summary-tag-label{ font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--gray); font-weight:600; margin-top:6px; }
+  .summary-total{ font-size:34px; font-weight:700; margin-top:8px; }
+  .summary-pill{ display:inline-block; margin-top:12px; background:var(--card-2); border-radius:20px; padding:7px 14px; font-size:11.5px; color:var(--gray); }
+
+  .summary-row{ display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-bottom:1px solid var(--divider); }
+  .summary-row.you{ background:var(--gold-dim); border-radius:14px; padding:13px 14px; border-bottom:none; margin-top:16px; }
+  .summary-person{ display:flex; align-items:center; gap:11px; }
+  .summary-name{ font-size:13.5px; font-weight:600; }
+  .summary-handle{ font-size:11px; color:var(--gray-dim); margin-top:2px; }
+  .summary-amt-col{ text-align:right; }
+  .summary-amt{ font-size:14px; font-weight:600; }
+  .summary-tag{ font-size:10.5px; color:var(--gray); margin-top:2px; }
+
+  .security-note{ display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--gray-dim); margin-top:16px; }
+
+  /* Screen 5 */
+  .success-center{ text-align:center; margin-top:20px; }
+  .ring-icon-wrap{ position:relative; width:88px; height:88px; margin:0 auto 20px; }
+  .ring-icon{ position:absolute; inset:0; border-radius:50%; border:1.5px solid var(--teal-dim); }
+  .ring-icon.r2{ inset:-12px; opacity:0.5; }
+  .ring-icon-inner{ position:absolute; inset:16px; background:var(--teal-dim); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; color:var(--teal); }
+  .success-title{ font-size:22px; font-weight:700; }
+  .success-sub{ font-size:13px; color:var(--gray); margin-top:6px; }
+
+  .status-card{ display:flex; justify-content:space-between; align-items:center; background:var(--card); border-radius:15px; padding:14px 16px; margin-top:10px; opacity:0; transform:translateY(8px); animation:fadeUp 0.4s ease forwards; }
+  .status-left{ display:flex; align-items:center; gap:11px; }
+  .status-sub{ font-size:11px; color:var(--gray-dim); margin-top:2px; }
+  .status-pill{ font-size:11px; font-weight:600; padding:5px 11px; border-radius:20px; background:var(--amber-dim); color:var(--amber); display:flex; align-items:center; gap:4px; }
+  .status-pill.paid{ background:var(--teal-dim); color:var(--teal); }
+  @keyframes fadeUp{ to{ opacity:1; transform:translateY(0); } }
+
+  .reminder-banner{ display:flex; gap:11px; align-items:flex-start; background:var(--gold-dim); border-radius:15px; padding:14px 15px; margin-top:16px; }
+  .reminder-banner .icon-wrap{ width:30px; height:30px; border-radius:9px; background:rgba(203,168,118,0.2); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .reminder-title{ font-size:12.5px; font-weight:700; color:var(--gold); }
+  .reminder-desc{ font-size:11.5px; color:var(--gray); margin-top:3px; line-height:1.45; }
+
+  /* Screen 6 */
+  .track-ring-card{ background:var(--card); border:1px solid var(--divider); border-radius:22px; padding:28px; margin-top:16px; display:flex; flex-direction:column; align-items:center; }
+  .track-ring-wrap{ position:relative; width:130px; height:130px; }
+  .track-ring-wrap svg{ transform:rotate(-90deg); filter:drop-shadow(0 0 8px rgba(79,216,184,0.5)); }
+  .track-pct{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .track-pct .num{ font-size:26px; font-weight:700; }
+  .track-pct .lbl{ font-size:11px; color:var(--gray); margin-top:2px; }
+  .track-amt{ font-size:24px; font-weight:700; margin-top:16px; }
+  .track-sub{ font-size:12px; color:var(--gray); margin-top:4px; }
+
+  .friend-row{ display:flex; align-items:center; gap:11px; padding:12px 0; border-bottom:1px solid var(--divider); }
+  .avatar-badge{ position:relative; flex-shrink:0; }
+  .paid-dot{ position:absolute; bottom:-2px; right:-2px; width:15px; height:15px; background:var(--teal); border-radius:50%; border:2px solid var(--bg); display:flex; align-items:center; justify-content:center; font-size:8px; color:#0a0a0b; font-weight:700; }
+
+  /* Screen 7 */
+  .medal-wrap{ position:relative; width:74px; height:74px; margin:24px auto 0; }
+  .medal{ width:100%; height:100%; border-radius:50%; background:var(--gold-dim); display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--gold); }
+  .medal-check{ position:absolute; bottom:-2px; right:-2px; width:26px; height:26px; background:var(--teal); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:#0a0a0b; border:3px solid var(--bg); font-weight:700; }
+  .complete-title{ font-size:22px; font-weight:700; text-align:center; margin-top:16px; }
+  .complete-sub{ text-align:center; font-size:13px; color:var(--gray); margin-top:6px; line-height:1.5; padding:0 20px; }
+  .hero-amt-card{ background:var(--card); border:1px solid var(--divider); border-radius:20px; padding:24px; text-align:center; margin-top:22px; }
+  .hero-amt-label{ font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--gray); font-weight:600; }
+  .hero-amt{ font-size:30px; font-weight:700; margin-top:8px; }
+  .applied-pill{ display:inline-flex; align-items:center; gap:6px; margin-top:12px; background:var(--teal-dim); color:var(--teal); font-size:11.5px; font-weight:600; padding:6px 13px; border-radius:20px; }
+  .cost-callout{ display:flex; align-items:center; gap:8px; background:var(--card-2); border-radius:14px; padding:13px 15px; font-size:11.5px; color:var(--gray); margin-top:16px; line-height:1.5; }
+  .cost-callout b{ color:var(--gold); }
+
+  .spacer{ flex:1; }
+  .fine-print{ text-align:center; font-size:10px; color:var(--gray-dim); margin-top:14px; }
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div class="frame">
+    <div class="statusbar">
+      <span>9:41</span>
+      <div class="icons">
+        <span>●●●●</span><span>📶</span><span>🔋</span>
+      </div>
+    </div>
+    <div class="dots" id="dots"></div>
+
+    <!-- SCREEN 1: HOME -->
+    <div class="screen active" id="screen-1">
+      <div class="top-row">
+        <div>
+          <div class="eyebrow">Good Evening</div>
+          <div class="name">Muskan 👋</div>
+        </div>
+        <div class="icon-btns">
+          <div class="icon-circle">🔔</div>
+          <div class="icon-circle avatar-circle">M</div>
+        </div>
+      </div>
+
+      <div class="due-card">
+        <div class="due-label">Total Credit Due</div>
+        <div class="due-amt">₹63,420</div>
+        <div class="due-date">Due <b>Aug 5, 2025</b></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="goTo(2)">Pay Now</button>
+          <button class="btn btn-ghost">Details</button>
+        </div>
+      </div>
+
+      <div class="chips">
+        <div class="chip"><div class="label">Credit Limit</div><div class="val">₹2.5L</div><div class="sub">₹86,580 free</div></div>
+        <div class="chip"><div class="label">Reward Pts</div><div class="val">4,820</div><div class="sub">+1.2k this month</div></div>
+      </div>
+
+      <div class="section-row">
+        <div class="section-label">Recent Transactions</div>
+        <div class="see-all">See all ›</div>
+      </div>
+
+      <div class="txn tappable" onclick="goTo(2)">
+        <div class="txn-icon">✈️</div>
+        <div class="txn-body">
+          <div class="txn-name-row"><span class="txn-name">Indigo Airlines</span><span class="badge">SPLIT?</span></div>
+          <div class="txn-sub">Today, 2:14 PM</div>
+        </div>
+        <div class="txn-amt">₹45,000</div>
+      </div>
+      <div class="txn">
+        <div class="txn-icon">🛍️</div>
+        <div class="txn-body"><div class="txn-name">Zara</div><div class="txn-sub">Yesterday, 6:40 PM</div></div>
+        <div class="txn-amt">₹8,420</div>
+      </div>
+      <div class="txn">
+        <div class="txn-icon">🚗</div>
+        <div class="txn-body"><div class="txn-name">Uber</div><div class="txn-sub">16 Jul, 9:05 AM</div></div>
+        <div class="txn-amt">₹650</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: TRANSACTION + SHEET -->
+    <div class="screen" id="screen-2">
+      <div class="header-row">
+        <div class="back-btn" onclick="goTo(1)">←</div>
+        <div><div class="header-title">Transaction Details</div></div>
+      </div>
+
+      <div class="due-card" style="margin-top:20px; text-align:center;">
+        <div style="font-size:26px;">✈️</div>
+        <div class="due-amt" style="margin-top:10px;">₹45,000</div>
+        <div class="due-date">Indigo Airlines · Paid using your credit card</div>
+      </div>
+
+      <div class="merchant-hint">👥 <span><b>4 travellers</b> detected on this booking</span></div>
+
+      <div class="spacer"></div>
+
+      <div class="sheet-backdrop" id="backdrop" onclick="dismissSheet()"></div>
+      <div class="sheet" id="sheet">
+        <div class="sheet-handle"></div>
+        <div class="avatars">
+          <div class="avatar" style="background:var(--gold);color:#191308;">M</div>
+          <div class="avatar" style="background:var(--blue);">R</div>
+          <div class="avatar" style="background:var(--purple);">P</div>
+          <div class="avatar" style="background:var(--orange);">A</div>
+        </div>
+        <div class="sheet-eyebrow">Social Sync</div>
+        <div class="sheet-headline">Looks like a group expense.</div>
+        <div class="sheet-sub">Split this payment with friends?</div>
+        <div class="sheet-tag">✈️ ₹45,000 <span class="people">· 4 people</span></div>
+        <div class="sheet-actions">
+          <button class="btn btn-white" style="width:100%;" onclick="goTo(3)">👥 Split Now</button>
+        </div>
+        <div class="maybe-later" onclick="dismissSheet()">Maybe later</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: SELECT FRIENDS -->
+    <div class="screen" id="screen-3">
+      <div class="header-row">
+        <div class="back-btn" onclick="dismissAndGo(2)">←</div>
+        <div>
+          <div class="header-title">Select Friends</div>
+          <div class="header-sub">Splitting ₹45,000</div>
+        </div>
+      </div>
+
+      <div class="selected-bar">
+        <div class="selected-left">
+          <div class="selected-avatars" id="selected-avatars"></div>
+          <div class="selected-text" id="selected-text">0 selected</div>
+        </div>
+        <span style="color:var(--gold);">⚡</span>
+      </div>
+
+      <div class="search">🔍 Search by name or UPI...</div>
+
+      <div class="section-row" style="margin-top:20px;">
+        <div style="font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--gray); font-weight:600;">Suggested</div>
+      </div>
+      <div id="friend-list"></div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="continue-btn" style="width:100%; opacity:0.4; pointer-events:none;" onclick="goTo(4)">Continue</button>
+    </div>
+
+    <!-- SCREEN 4: SPLIT SUMMARY -->
+    <div class="screen" id="screen-4">
+      <div class="header-row">
+        <div class="back-btn" onclick="goTo(3)">←</div>
+        <div>
+          <div class="header-title">Split Summary</div>
+          <div class="header-sub">Review before sending</div>
+        </div>
+      </div>
+
+      <div class="summary-hero">
+        <div class="merchant-emoji">✈️</div>
+        <div class="summary-tag-label">Total · Indigo Airlines</div>
+        <div class="summary-total">₹45,000</div>
+        <div class="summary-pill" id="summary-pill">Equal split · 4 people · ₹11,250 each</div>
+      </div>
+
+      <div class="summary-row you">
+        <div class="summary-person">
+          <div class="avatar" style="width:32px;height:32px;font-size:12px;background:var(--gold);color:#191308;margin-left:0;">M</div>
+          <div><div class="summary-name">You</div><div class="summary-handle">Your share · will not be sent</div></div>
+        </div>
+        <div class="summary-amt-col"><div class="summary-amt" id="your-share">₹11,250</div><div class="summary-tag">of card due</div></div>
+      </div>
+
+      <div id="summary-friends" style="margin-top:4px;"></div>
+
+      <div class="security-note">🔒 UPI requests will be sent instantly. Automatic reminders included.</div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="send-btn" style="width:100%;" onclick="goTo(5)">Send UPI Requests</button>
+    </div>
+
+    <!-- SCREEN 5: REQUESTS SENT -->
+    <div class="screen" id="screen-5">
+      <div class="success-center">
+        <div class="ring-icon-wrap">
+          <div class="ring-icon"></div>
+          <div class="ring-icon r2"></div>
+          <div class="ring-icon-inner">➤</div>
+        </div>
+        <div class="success-title">Requests Sent!</div>
+        <div class="success-sub" id="sent-sub">₹11,250 UPI request sent to 3 friends</div>
+      </div>
+
+      <div id="sent-cards" style="margin-top:22px;"></div>
+
+      <div class="reminder-banner">
+        <div class="icon-wrap">⚡</div>
+        <div>
+          <div class="reminder-title">Reminders scheduled</div>
+          <div class="reminder-desc">Reminders will be sent automatically before Aug 5</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-white" style="width:100%;" onclick="goTo(6)">Track Progress</button>
+    </div>
+
+    <!-- SCREEN 6: LIVE TRACKING -->
+    <div class="screen" id="screen-6">
+      <div class="header-row">
+        <div class="back-btn" onclick="goTo(5)">←</div>
+        <div>
+          <div class="header-title">Live Tracking</div>
+          <div class="header-sub">Indigo Airlines · ₹45,000</div>
+        </div>
+      </div>
+
+      <div class="track-ring-card">
+        <div class="track-ring-wrap">
+          <svg width="130" height="130" viewBox="0 0 130 130">
+            <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="9"/>
+            <circle id="track-circle" cx="65" cy="65" r="54" fill="none" stroke="#4fd8b8" stroke-width="9" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="339"/>
+          </svg>
+          <div class="track-pct"><div class="num" id="track-num">0%</div><div class="lbl">collected</div></div>
+        </div>
+        <div class="track-amt" id="track-amt">₹0</div>
+        <div class="track-sub" id="track-sub">of ₹45,000 · 0 of 3 paid</div>
+      </div>
+
+      <div id="track-friends" style="margin-top:6px;"></div>
+
+      <div class="reminder-banner">
+        <div class="icon-wrap">🔔</div>
+        <div>
+          <div class="reminder-title">Auto-reminder scheduled</div>
+          <div class="reminder-desc">Pending friends will be reminded 3 days before your credit card due date, Aug 5, 2025.</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-white" style="width:100%;" onclick="completeSettlement()">Mark as Complete</button>
+    </div>
+
+    <!-- SCREEN 7: SETTLEMENT COMPLETE -->
+    <div class="screen" id="screen-7">
+      <div class="medal-wrap">
+        <div class="medal">✨</div>
+        <div class="medal-check">✓</div>
+      </div>
+      <div class="complete-title">Everyone Paid! 🎉</div>
+      <div class="complete-sub">Your credit card outstanding has been settled automatically.</div>
+
+      <div class="hero-amt-card">
+        <div class="hero-amt-label">Total Recovered</div>
+        <div class="hero-amt">₹45,000</div>
+        <div class="applied-pill">💠 Applied to your card balance</div>
+      </div>
+
+      <div class="cost-callout">⚡ Your effective spend: <b id="effective-spend">₹11,250</b> for 4 flight tickets</div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-white" style="width:100%;" onclick="resetAndGoHome()">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const friends = [
+    { name:'Rahul', handle:'@rahulpay', color:'var(--blue)', initial:'R' },
+    { name:'Priya', handle:'@priyaupi', color:'var(--purple)', initial:'P' },
+    { name:'Aman', handle:'@amanpay', color:'var(--orange)', initial:'A' },
+    { name:'Neha', handle:'@nehaupi', color:'var(--green)', initial:'N' },
+  ];
+  let selected = new Set(); // user must actively select friends on screen 3
+  let currentScreen = 1;
+  const totalScreens = 7;
+  const TOTAL_AMOUNT = 45000;
+
+  const dotsEl = document.getElementById('dots');
+  for(let i=1;i<=totalScreens;i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===1 ? ' active' : '');
+    d.id = 'dot-'+i;
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n){
+    document.getElementById('screen-'+currentScreen).classList.remove('active');
+    document.getElementById('dot-'+currentScreen).classList.remove('active');
+    currentScreen = n;
+    document.getElementById('screen-'+n).classList.add('active');
+    document.getElementById('dot-'+n).classList.add('active');
+
+    if(n===2){
+      setTimeout(()=>{
+        document.getElementById('backdrop').classList.add('show');
+        document.getElementById('sheet').classList.add('show');
+      }, 400);
+    }
+    if(n===3){ renderFriendList(); updateSelectedBar(); }
+    if(n===4){ renderSummary(); }
+    if(n===5){ renderSentCards(); }
+    if(n===6){ renderTrackFriends(); animateRing(); }
+  }
+
+  function dismissSheet(){
+    document.getElementById('backdrop').classList.remove('show');
+    document.getElementById('sheet').classList.remove('show');
+  }
+  function dismissAndGo(n){ dismissSheet(); goTo(n); }
+
+  function renderFriendList(){
+    const el = document.getElementById('friend-list');
+    el.innerHTML = '';
+    friends.forEach((f,i)=>{
+      const row = document.createElement('div');
+      row.className = 'friend';
+      const isChecked = selected.has(i);
+      row.innerHTML = `
+        <div class="friend-avatar" style="background:${f.color};">${f.initial}</div>
+        <div class="friend-name">${f.name}<div class="friend-handle">${f.handle}</div></div>
+        <div class="checkmark ${isChecked?'checked':''}" id="cb-${i}" style="background:${isChecked?f.color:'transparent'};border-color:${isChecked?f.color:'var(--gray-dim)'};">✓</div>
+      `;
+      row.onclick = () => toggleFriend(i);
+      el.appendChild(row);
+    });
+  }
+
+  function toggleFriend(i){
+    if(selected.has(i)){ selected.delete(i); } else { selected.add(i); }
+    renderFriendList();
+    updateSelectedBar();
+  }
+
+  function updateSelectedBar(){
+    const avatarsEl = document.getElementById('selected-avatars');
+    const textEl = document.getElementById('selected-text');
+    const btn = document.getElementById('continue-btn');
+    avatarsEl.innerHTML = '';
+    selected.forEach(i=>{
+      const f = friends[i];
+      const a = document.createElement('div');
+      a.className = 'avatar';
+      a.style.background = f.color;
+      a.textContent = f.initial;
+      avatarsEl.appendChild(a);
+    });
+    if(selected.size === 0){
+      textEl.textContent = '0 selected';
+      btn.style.opacity = 0.4; btn.style.pointerEvents = 'none';
+      btn.textContent = 'Continue';
+      return;
+    }
+    const each = Math.round(TOTAL_AMOUNT / (selected.size + 1));
+    textEl.textContent = `${selected.size} selected · ₹${each.toLocaleString('en-IN')} each`;
+    btn.style.opacity = 1; btn.style.pointerEvents = 'auto';
+    btn.textContent = `Continue with ${selected.size} friend${selected.size>1?'s':''}`;
+  }
+
+  function eachShare(){ return Math.round(TOTAL_AMOUNT / (selected.size + 1)); }
+
+  function renderSummary(){
+    const each = eachShare();
+    document.getElementById('summary-pill').textContent = `Equal split · ${selected.size+1} people · ₹${each.toLocaleString('en-IN')} each`;
+    document.getElementById('your-share').textContent = `₹${each.toLocaleString('en-IN')}`;
+    document.getElementById('send-btn').textContent = `Send ${selected.size} UPI Requests`;
+
+    const el = document.getElementById('summary-friends');
+    el.innerHTML = '';
+    selected.forEach(i=>{
+      const f = friends[i];
+      const row = document.createElement('div');
+      row.className = 'summary-row';
+      row.innerHTML = `
+        <div class="summary-person">
+          <div class="avatar" style="width:32px;height:32px;font-size:12px;background:${f.color};margin-left:0;">${f.initial}</div>
+          <div><div class="summary-name">${f.name}</div><div class="summary-handle">${f.handle} · UPI request</div></div>
+        </div>
+        <div class="summary-amt-col"><div class="summary-amt">₹${each.toLocaleString('en-IN')}</div><div class="summary-tag">to collect</div></div>
+      `;
+      el.appendChild(row);
+    });
+  }
+
+  function renderSentCards(){
+    const each = eachShare();
+    document.getElementById('sent-sub').textContent = `₹${each.toLocaleString('en-IN')} UPI request sent to ${selected.size} friends`;
+    const el = document.getElementById('sent-cards');
+    el.innerHTML = '';
+    let delay = 0;
+    selected.forEach(i=>{
+      const f = friends[i];
+      const card = document.createElement('div');
+      card.className = 'status-card';
+      card.style.animationDelay = delay + 's';
+      card.innerHTML = `
+        <div class="status-left">
+          <div class="avatar" style="width:34px;height:34px;font-size:12px;background:${f.color};margin-left:0;">${f.initial}</div>
+          <div><div class="summary-name">${f.name}</div><div class="status-sub">₹${each.toLocaleString('en-IN')} · ${f.handle}</div></div>
+        </div>
+        <div class="status-pill">⏱ Pending</div>
+      `;
+      el.appendChild(card);
+      delay += 0.12;
+    });
+  }
+
+  function renderTrackFriends(){
+    const each = eachShare();
+    const el = document.getElementById('track-friends');
+    el.innerHTML = '';
+    const arr = Array.from(selected);
+    arr.forEach((i, idx)=>{
+      const f = friends[i];
+      const paid = idx < 2; // first two paid, matches screenshot pattern
+      const row = document.createElement('div');
+      row.className = 'friend-row';
+      row.innerHTML = `
+        <div class="avatar-badge">
+          <div class="avatar" style="margin-left:0;background:${f.color};">${f.initial}</div>
+          ${paid ? '<div class="paid-dot">✓</div>' : ''}
+        </div>
+        <div style="flex:1;"><div class="summary-name">${f.name}</div><div class="summary-handle">₹${each.toLocaleString('en-IN')} · ${f.handle}</div></div>
+        <div class="status-pill ${paid?'paid':''}">${paid ? '✓ Paid' : '⏱ Pending'}</div>
+      `;
+      el.appendChild(row);
+    });
+  }
+
+  function animateRing(){
+    const circle = document.getElementById('track-circle');
+    const num = document.getElementById('track-num');
+    const amtEl = document.getElementById('track-amt');
+    const subEl = document.getElementById('track-sub');
+    const each = eachShare();
+    const paidCount = Math.min(2, selected.size);
+    const pct = Math.round((paidCount / selected.size) * 100) || 0;
+    const collected = each * paidCount;
+    subEl.textContent = `of ₹${TOTAL_AMOUNT.toLocaleString('en-IN')} · ${paidCount} of ${selected.size} paid`;
+    const circumference = 339;
+    circle.style.strokeDashoffset = circumference;
+    num.textContent = '0%';
+    amtEl.textContent = '₹0';
+    setTimeout(()=>{
+      circle.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(0.4,0,0.2,1)';
+      circle.style.strokeDashoffset = circumference * (1 - pct/100);
+      let n = 0;
+      const iv = setInterval(()=>{
+        n += 2;
+        if(n >= pct){ n = pct; clearInterval(iv); }
+        num.textContent = n + '%';
+        amtEl.textContent = '₹' + Math.round(collected * (n/pct || 0)).toLocaleString('en-IN');
+      }, 20);
+    }, 150);
+  }
+
+  function completeSettlement(){
+    document.getElementById('effective-spend').textContent = `₹${eachShare().toLocaleString('en-IN')}`;
+    goTo(7);
+  }
+
+  function resetAndGoHome(){
+    goTo(1);
+  }
+</script>
+
+<!-- Portfolio disclaimer -->
+<style>
+  .proto-disclaimer{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:9999;
+    max-width:94vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    text-align:center;font-family:system-ui,-apple-system,sans-serif;
+    font-size:10.5px;line-height:1.4;color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.5);
+    backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.1);border-radius:999px;
+    padding:5px 13px;pointer-events:none;}
+  @media (max-width:520px){.proto-disclaimer{font-size:9.5px;padding:4px 10px;}}
+</style>
+<div class="proto-disclaimer" title="Independent design concept by Muskan Gupta. A portfolio prototype, not a real product. Not affiliated with, endorsed by, or connected to any bank, card issuer or payment provider.">Concept prototype by Muskan Gupta · not affiliated with any bank or card issuer</div>
+</body>
+</html>

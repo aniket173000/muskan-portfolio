@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart-Sync Settlement — group expense settle-up (concept prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#1cc29f;
+    --green-dark:#159880;
+    --green-tint:#e7f9f5;
+    --purple:#463a8c;
+    --purple-dark:#332a68;
+    --ink:#1a1a1e;
+    --gray:#6b7280;
+    --gray-light:#9aa0a8;
+    --border:#eceef0;
+    --bg:#ffffff;
+    --bg-soft:#f7f8f9;
+    --red:#e35b5b;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:#e9eaec;
+    font-family:'DM Sans',sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px; color:var(--ink);
+  }
+  .device{
+    width:375px; height:812px;
+    background:#000; border-radius:46px; padding:12px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.06);
+    position:relative;
+  }
+  .frame{
+    width:100%; height:100%; background:var(--bg);
+    border-radius:34px; overflow:hidden; position:relative;
+    display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 26px 6px; font-size:14px; font-weight:600; color:var(--ink);
+    position:relative; z-index:40; flex-shrink:0;
+  }
+  .statusbar.on-purple{ color:#fff; background:var(--purple); }
+
+  .screen{
+    position:absolute; inset:0; top:44px; bottom:0;
+    padding:14px 18px 18px;
+    display:flex; flex-direction:column;
+    opacity:0; pointer-events:none; transform:translateX(20px);
+    transition:opacity 0.35s ease, transform 0.35s ease;
+    overflow-y:auto;
+    background:var(--bg);
+  }
+  .screen.active{ opacity:1; pointer-events:auto; transform:translateX(0); }
+  .screen.purple-bg{ background:linear-gradient(160deg, var(--purple), var(--purple-dark)); color:#fff; }
+
+  /* ---- Screen 1: Group page ---- */
+  .header-row{ display:flex; align-items:center; gap:12px; padding:4px 2px 10px; }
+  .back-btn{
+    font-size:20px; color:var(--ink); cursor:pointer; width:36px; height:36px; flex-shrink:0;
+    background:none; border:none; font-family:inherit; display:flex; align-items:center; justify-content:center;
+    border-radius:50%; padding:0;
+  }
+  .back-btn:active{ background:rgba(0,0,0,0.06); }
+  .back-btn.on-purple{ color:#fff; }
+  .back-btn.on-purple:active{ background:rgba(255,255,255,0.12); }
+  .upi-top-row{ padding:2px 0 0; }
+  .group-title{ font-size:18px; font-weight:700; }
+  .group-sub{ font-size:11.5px; color:var(--gray); margin-top:1px; }
+
+  .balance-card{
+    background:var(--green-tint); border-radius:16px; padding:18px;
+    display:flex; align-items:center; justify-content:space-between; margin-top:10px;
+  }
+  .balance-left{ display:flex; align-items:center; gap:12px; }
+  .avatar{ width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#fff; flex-shrink:0; }
+  .balance-name{ font-size:14.5px; font-weight:600; }
+  .balance-desc{ font-size:12px; color:var(--green-dark); font-weight:600; margin-top:2px; }
+  .settle-btn{
+    background:var(--green); color:#fff; border:none; border-radius:12px;
+    padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
+  }
+
+  .section-label{ font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:var(--gray); font-weight:700; margin:20px 0 8px; }
+
+  .expense-row{ display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--border); }
+  .expense-icon{ width:38px; height:38px; border-radius:10px; background:var(--bg-soft); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .expense-body{ flex:1; min-width:0; }
+  .expense-name{ font-size:13.5px; font-weight:600; }
+  .expense-sub{ font-size:11px; color:var(--gray); margin-top:2px; }
+  .expense-amt-col{ text-align:right; }
+  .expense-amt{ font-size:13px; font-weight:600; }
+  .expense-tag{ font-size:10.5px; color:var(--green-dark); margin-top:2px; font-weight:600; }
+  .expense-row.settled{ opacity:0.45; }
+  .expense-row.settled .expense-name{ text-decoration:line-through; }
+  .expense-row.settled .expense-tag{ color:var(--gray); }
+
+  .sync-badge{
+    display:inline-flex; align-items:center; gap:6px; background:var(--green-tint); color:var(--green-dark);
+    font-size:11px; font-weight:700; padding:6px 12px; border-radius:20px; margin-top:12px;
+  }
+
+  .sheet-backdrop{
+    position:absolute; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(3px);
+    opacity:0; pointer-events:none; transition:opacity 0.3s ease; z-index:60;
+  }
+  .sheet-backdrop.show{ opacity:1; pointer-events:auto; }
+  .pay-sheet{
+    position:absolute; left:0; right:0; bottom:0;
+    background:#fff; border-radius:26px 26px 0 0; padding:20px 20px 26px;
+    transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0.72,0,1);
+    z-index:61; box-shadow:0 -8px 30px rgba(0,0,0,0.12);
+  }
+  .pay-sheet.show{ transform:translateY(0); }
+  .pay-sheet-title{ font-size:16px; font-weight:700; text-align:center; margin-top:4px; }
+  .pay-sheet-sub{ font-size:12px; color:var(--gray); text-align:center; margin-top:3px; margin-bottom:16px; }
+  .pay-option{ display:flex; align-items:center; gap:12px; padding:12px 6px; border-bottom:1px solid var(--border); cursor:pointer; }
+  .pay-option:last-of-type{ border-bottom:none; }
+  .pay-option-icon{ width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; color:#fff; flex-shrink:0; }
+  .pay-option-body{ flex:1; }
+  .pay-option-name{ font-size:13.5px; font-weight:600; }
+  .pay-option-sub{ font-size:11px; color:var(--gray); margin-top:2px; }
+  .pay-option-chevron{ font-size:18px; color:var(--gray-light); }
+  .dismiss-text{ text-align:center; font-size:13px; color:var(--gray); margin-top:14px; cursor:pointer; padding:8px; }
+
+  .bottom-nav{
+    display:flex; justify-content:space-around; align-items:center;
+    padding:12px 0 6px; border-top:1px solid var(--border); background:#fff;
+    flex-shrink:0; position:relative; z-index:30;
+  }
+  .nav-item{ display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9.5px; color:var(--gray-light); }
+  .nav-item.active{ color:var(--green); }
+  .nav-icon{ font-size:18px; }
+
+  /* ---- Screen 2: UPI ---- */
+  .upi-header{ text-align:center; padding-top:20px; }
+  .upi-logo{ font-size:15px; font-weight:800; letter-spacing:0.02em; }
+  .pay-to-card{
+    background:rgba(255,255,255,0.1); border-radius:18px; padding:22px; margin-top:28px; text-align:center;
+  }
+  .pay-avatar{ width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.18); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; margin:0 auto 12px; }
+  .pay-to-label{ font-size:11.5px; opacity:0.75; }
+  .pay-to-name{ font-size:16px; font-weight:700; margin-top:4px; }
+  .pay-to-upi{ font-size:11.5px; opacity:0.6; margin-top:2px; }
+
+  .amount-input-wrap{ text-align:center; margin-top:34px; }
+  .amount-input-label{ font-size:11.5px; opacity:0.7; }
+  .amount-input{ font-size:38px; font-weight:700; margin-top:10px; }
+
+  .note-row{ background:rgba(255,255,255,0.1); border-radius:14px; padding:12px 15px; margin-top:26px; font-size:12.5px; opacity:0.85; }
+
+  .pay-btn-wrap{ margin-top:auto; padding-top:20px; }
+  .pay-btn{
+    width:100%; background:#fff; color:var(--purple); border:none; border-radius:16px;
+    padding:15px; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
+  }
+
+  /* ---- Screen 3: UPI success ---- */
+  .success-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; }
+  .tick-circle{
+    width:88px; height:88px; border-radius:50%; background:rgba(255,255,255,0.15);
+    display:flex; align-items:center; justify-content:center; font-size:40px;
+    animation:pop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes pop{ 0%{ transform:scale(0); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
+  .success-amt{ font-size:30px; font-weight:700; margin-top:22px; }
+  .success-sub{ font-size:13px; opacity:0.75; margin-top:6px; }
+
+  .return-banner{
+    position:absolute; left:18px; right:18px; bottom:26px;
+    background:rgba(255,255,255,0.95); color:var(--ink);
+    border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;
+    opacity:0; transform:translateY(20px); transition:all 0.4s ease;
+  }
+  .return-banner.show{ opacity:1; transform:translateY(0); }
+  .return-spinner{
+    width:22px; height:22px; border-radius:50%; border:2.5px solid var(--border); border-top-color:var(--purple);
+    animation:spin 0.8s linear infinite; flex-shrink:0;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .return-text{ font-size:12.5px; font-weight:600; flex:1; }
+  .return-count{ font-size:12px; color:var(--gray); font-weight:700; }
+
+  /* ---- Screen 4: Smart-Sync detected ---- */
+  .sync-hero{ text-align:center; padding:6px 0 4px; }
+  .sync-hero-title{ font-size:17px; font-weight:700; }
+  .sync-hero-sub{ font-size:12px; color:var(--gray); margin-top:3px; }
+
+  .sync-card{
+    background:var(--bg); border:1.5px solid var(--green); border-radius:20px; padding:20px; margin-top:18px;
+    opacity:0; transform:translateY(16px) scale(0.97);
+    transition:all 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .sync-card.show{ opacity:1; transform:translateY(0) scale(1); }
+  .sync-check-row{ display:flex; align-items:center; gap:8px; }
+  .sync-check-icon{ width:24px; height:24px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+  .sync-check-text{ font-size:13.5px; font-weight:700; color:var(--green-dark); }
+
+  .sync-detail-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); margin-top:12px; }
+  .sync-detail-k{ font-size:12px; color:var(--gray); }
+  .sync-detail-v{ font-size:13px; font-weight:600; }
+
+  .confidence-wrap{ margin-top:14px; }
+  .confidence-label-row{ display:flex; justify-content:space-between; font-size:11px; color:var(--gray); margin-bottom:6px; }
+  .confidence-track{ height:6px; background:var(--bg-soft); border-radius:4px; overflow:hidden; }
+  .confidence-fill{ height:100%; background:var(--green); border-radius:4px; width:0%; transition:width 1s cubic-bezier(0.4,0,0.2,1); }
+
+  .confirm-btn{
+    width:100%; background:var(--green); color:#fff; border:none; border-radius:14px;
+    padding:14px; font-size:14.5px; font-weight:700; cursor:pointer; margin-top:20px; font-family:'DM Sans',sans-serif;
+  }
+  .dismiss-text{ text-align:center; font-size:12px; color:var(--gray); margin-top:12px; cursor:pointer; }
+
+  /* ---- Screen 5: Settlement review ---- */
+  .review-hero{ text-align:center; background:var(--bg-soft); border-radius:18px; padding:22px; margin-top:6px; }
+  .review-amt{ font-size:30px; font-weight:700; }
+  .review-sub{ font-size:12px; color:var(--gray); margin-top:4px; }
+
+  .review-list{ margin-top:16px; }
+  .review-row{ display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:12.5px; }
+  .review-row .k{ color:var(--gray); }
+  .review-row .v{ font-weight:600; }
+
+  .attribution-note{
+    display:flex; gap:9px; align-items:flex-start; background:var(--green-tint); border-radius:14px;
+    padding:13px 14px; margin-top:16px; font-size:11.5px; color:var(--green-dark); line-height:1.5;
+  }
+
+  /* ---- Screen 6: Success ---- */
+  .rings-wrap{ position:relative; width:110px; height:110px; margin:26px auto 0; }
+  .ring{ position:absolute; inset:0; border-radius:50%; border:1.5px solid rgba(28,194,159,0.25); }
+  .ring.r2{ inset:-14px; opacity:0.6; }
+  .ring.r3{ inset:-28px; opacity:0.3; }
+  .ring-center{ position:absolute; inset:18px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:34px; color:#fff; }
+
+  .receipt-card{ background:var(--bg-soft); border-radius:16px; padding:18px; margin-top:24px; }
+  .receipt-row{ display:flex; justify-content:space-between; padding:8px 0; font-size:12.5px; }
+  .receipt-row .k{ color:var(--gray); }
+  .receipt-row .v{ font-weight:600; }
+  .receipt-divider{ height:1px; background:var(--border); margin:6px 0; }
+
+  /* ---- Common buttons ---- */
+  .primary-btn{
+    width:100%; background:var(--green); color:#fff; border:none; border-radius:14px;
+    padding:14px; font-size:14.5px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
+  }
+  .spacer{ flex:1; }
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div class="frame">
+    <div class="statusbar" id="statusbar">
+      <span>9:41</span>
+      <div>●●●● 📶 🔋</div>
+    </div>
+
+    <!-- SCREEN 1: Group page -->
+    <div class="screen active" id="screen-1">
+      <div class="header-row">
+        <button class="back-btn">←</button>
+        <div>
+          <div class="group-title">Goa Trip</div>
+          <div class="group-sub">4 members · 6 expenses</div>
+        </div>
+      </div>
+
+      <div class="balance-card">
+        <div class="balance-left">
+          <div class="avatar" style="background:#5f7fbf;">R</div>
+          <div>
+            <div class="balance-name">Rahul</div>
+            <div class="balance-desc">you owe ₹2,400</div>
+          </div>
+        </div>
+        <button class="settle-btn" onclick="openPaySheet()">Settle up</button>
+      </div>
+
+      <div class="section-label">Expenses</div>
+      <div class="expense-row">
+        <div class="expense-icon">🏨</div>
+        <div class="expense-body"><div class="expense-name">Resort Booking</div><div class="expense-sub">Paid by you</div></div>
+        <div class="expense-amt-col"><div class="expense-amt">₹18,400</div><div class="expense-tag">you get ₹9,200</div></div>
+      </div>
+      <div class="expense-row">
+        <div class="expense-icon">🍽️</div>
+        <div class="expense-body"><div class="expense-name">Dinner at Thalassa</div><div class="expense-sub">Paid by Rahul</div></div>
+        <div class="expense-amt-col"><div class="expense-amt">₹3,600</div><div class="expense-tag">you owe ₹1,800</div></div>
+      </div>
+      <div class="expense-row" id="boat-row">
+        <div class="expense-icon">🚤</div>
+        <div class="expense-body"><div class="expense-name">Boat Ride</div><div class="expense-sub">Paid by you</div></div>
+        <div class="expense-amt-col"><div class="expense-amt">₹2,000</div><div class="expense-tag">you get ₹1,000</div></div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active"><div class="nav-icon">👥</div>Groups</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Friends</div>
+        <div class="nav-item"><div class="nav-icon">📋</div>Activity</div>
+        <div class="nav-item"><div class="nav-icon">⚙️</div>Account</div>
+      </div>
+
+      <div class="sheet-backdrop" id="pay-backdrop" onclick="dismissPaySheet()"></div>
+      <div class="pay-sheet" id="pay-sheet">
+        <div class="sheet-handle"></div>
+        <div class="pay-sheet-title">Choose payment method</div>
+        <div class="pay-sheet-sub">Settle ₹2,400 with Rahul</div>
+
+        <div class="pay-option" onclick="choosePayment('UPI App')">
+          <div class="pay-option-icon" style="background:#463a8c;">U</div>
+          <div class="pay-option-body"><div class="pay-option-name">UPI App</div><div class="pay-option-sub">rahul@ybl</div></div>
+          <span class="pay-option-chevron">›</span>
+        </div>
+        <div class="pay-option" onclick="choosePayment('Bank UPI')">
+          <div class="pay-option-icon" style="background:#fff;border:1px solid var(--border);color:#1a1a1a;">B</div>
+          <div class="pay-option-body"><div class="pay-option-name">Bank UPI</div><div class="pay-option-sub">rahul@okbank</div></div>
+          <span class="pay-option-chevron">›</span>
+        </div>
+        <div class="pay-option" onclick="choosePayment('Wallet UPI')">
+          <div class="pay-option-icon" style="background:#2f8fb8;">W</div>
+          <div class="pay-option-body"><div class="pay-option-name">Wallet UPI</div><div class="pay-option-sub">rahul@wallet</div></div>
+          <span class="pay-option-chevron">›</span>
+        </div>
+
+        <div class="dismiss-text" onclick="dismissPaySheet()">Cancel</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: UPI pay -->
+    <div class="screen purple-bg" id="screen-2">
+      <div class="upi-top-row">
+        <button class="back-btn on-purple" onclick="goTo(1)">←</button>
+      </div>
+      <div class="upi-header">
+        <div class="upi-logo">UPI App</div>
+      </div>
+
+      <div class="pay-to-card">
+        <div class="pay-avatar">R</div>
+        <div class="pay-to-label">Paying</div>
+        <div class="pay-to-name">Rahul Sharma</div>
+        <div class="pay-to-upi">rahul@ybl</div>
+      </div>
+
+      <div class="amount-input-wrap">
+        <div class="amount-input-label">Enter amount</div>
+        <div class="amount-input">₹2,400</div>
+      </div>
+
+      <div class="note-row">📝 Note: Goa Trip settlement</div>
+
+      <div class="pay-btn-wrap">
+        <button class="pay-btn" onclick="goTo(3)">Pay ₹2,400</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: UPI success -->
+    <div class="screen purple-bg" id="screen-3">
+      <div class="upi-top-row">
+        <button class="back-btn on-purple" onclick="goTo(1)">←</button>
+      </div>
+      <div class="success-wrap">
+        <div class="tick-circle">✓</div>
+        <div class="success-amt">₹2,400 sent</div>
+        <div class="success-sub">to Rahul Sharma · rahul@ybl</div>
+      </div>
+      <div class="return-banner" id="return-banner">
+        <div class="return-spinner"></div>
+        <div class="return-text">Returning to the expense app…</div>
+        <div class="return-count" id="return-count">3</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: Smart-Sync detected -->
+    <div class="screen" id="screen-4">
+      <div class="header-row">
+        <button class="back-btn" onclick="goTo(1)">←</button>
+        <div class="group-title" style="font-size:16px;">Goa Trip</div>
+      </div>
+      <div class="sync-hero">
+        <div class="sync-hero-sub">We noticed a payment that might belong here</div>
+      </div>
+
+      <div class="sync-card" id="sync-card">
+        <div class="sync-check-row">
+          <div class="sync-check-icon">✓</div>
+          <div class="sync-check-text">Payment Detected</div>
+        </div>
+
+        <div class="sync-detail-row"><span class="sync-detail-k">Source</span><span class="sync-detail-v">UPI · ₹2,400</span></div>
+        <div class="sync-detail-row"><span class="sync-detail-k">Matched with</span><span class="sync-detail-v">Goa Trip</span></div>
+        <div class="sync-detail-row"><span class="sync-detail-k">Paid to</span><span class="sync-detail-v">Rahul Sharma</span></div>
+
+        <div class="confidence-wrap">
+          <div class="confidence-label-row"><span>Match confidence</span><span id="confidence-num">0%</span></div>
+          <div class="confidence-track"><div class="confidence-fill" id="confidence-fill"></div></div>
+        </div>
+
+        <button class="confirm-btn" onclick="goTo(5)">Confirm Settlement</button>
+        <div class="dismiss-text">Not this expense?</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: Settlement review -->
+    <div class="screen" id="screen-5">
+      <div class="header-row">
+        <button class="back-btn" onclick="goTo(4)">←</button>
+        <div class="group-title" style="font-size:16px;">Confirm settlement</div>
+      </div>
+
+      <div class="review-hero">
+        <div class="review-amt">₹2,400</div>
+        <div class="review-sub">You → Rahul Sharma</div>
+      </div>
+
+      <div class="review-list">
+        <div class="review-row"><span class="k">Group</span><span class="v">Goa Trip</span></div>
+        <div class="review-row"><span class="k">Payment method</span><span class="v">UPI</span></div>
+        <div class="review-row"><span class="k">Transaction time</span><span class="v">Just now</span></div>
+        <div class="review-row"><span class="k">New balance with Rahul</span><span class="v" style="color:var(--green-dark);">₹0</span></div>
+      </div>
+
+      <div class="attribution-note">✨ Matched automatically by Smart-Sync — no manual entry needed. Confidence 98%.</div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn" onclick="goTo(6)">Confirm &amp; Settle</button>
+    </div>
+
+    <!-- SCREEN 6: Success -->
+    <div class="screen" id="screen-6">
+      <div class="rings-wrap">
+        <div class="ring"></div>
+        <div class="ring r2"></div>
+        <div class="ring r3"></div>
+        <div class="ring-center">✓</div>
+      </div>
+      <div style="text-align:center; margin-top:20px;">
+        <div style="font-size:19px; font-weight:700;">Settled up!</div>
+        <div style="font-size:12.5px; color:var(--gray); margin-top:5px;">Expense marked as settled · balances updated</div>
+      </div>
+
+      <div class="receipt-card">
+        <div class="receipt-row"><span class="k">Amount</span><span class="v">₹2,400</span></div>
+        <div class="receipt-row"><span class="k">To</span><span class="v">Rahul Sharma</span></div>
+        <div class="receipt-row"><span class="k">Group</span><span class="v">Goa Trip</span></div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-row"><span class="k">Method</span><span class="v">Smart-Sync · UPI</span></div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn" onclick="goTo(7)">Back to group</button>
+    </div>
+
+    <!-- SCREEN 7: Updated group page -->
+    <div class="screen" id="screen-7">
+      <div class="header-row">
+        <button class="back-btn" onclick="goTo(6)">←</button>
+        <div>
+          <div class="group-title">Goa Trip</div>
+          <div class="group-sub">4 members · 6 expenses</div>
+        </div>
+      </div>
+
+      <div class="balance-card" style="background:var(--bg-soft);">
+        <div class="balance-left">
+          <div class="avatar" style="background:#5f7fbf;">R</div>
+          <div>
+            <div class="balance-name">Rahul</div>
+            <div class="balance-desc" style="color:var(--gray);">settled up — ₹0</div>
+          </div>
+        </div>
+        <div style="font-size:20px;">✓</div>
+      </div>
+
+      <div class="sync-badge">✨ Automatically synced via Smart-Sync</div>
+
+      <div class="section-label">Expenses</div>
+      <div class="expense-row">
+        <div class="expense-icon">🏨</div>
+        <div class="expense-body"><div class="expense-name">Resort Booking</div><div class="expense-sub">Paid by you</div></div>
+        <div class="expense-amt-col"><div class="expense-amt">₹18,400</div><div class="expense-tag">you get ₹9,200</div></div>
+      </div>
+      <div class="expense-row settled">
+        <div class="expense-icon">🍽️</div>
+        <div class="expense-body"><div class="expense-name">Dinner at Thalassa</div><div class="expense-sub">Settled via Smart-Sync</div></div>
+        <div class="expense-amt-col"><div class="expense-amt">₹3,600</div><div class="expense-tag">settled</div></div>
+      </div>
+      <div class="expense-row settled">
+        <div class="expense-icon">🚤</div>
+        <div class="expense-body"><div class="expense-name">Boat Ride</div><div class="expense-sub">Settled via Smart-Sync</div></div>
+        <div class="expense-amt-col"><div class="expense-amt">₹2,000</div><div class="expense-tag">settled</div></div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active"><div class="nav-icon">👥</div>Groups</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Friends</div>
+        <div class="nav-item"><div class="nav-icon">📋</div>Activity</div>
+        <div class="nav-item"><div class="nav-icon">⚙️</div>Account</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentScreen = 1;
+  let countdownTimer = null;
+
+  function openPaySheet(){
+    document.getElementById('pay-backdrop').classList.add('show');
+    document.getElementById('pay-sheet').classList.add('show');
+  }
+  function dismissPaySheet(){
+    document.getElementById('pay-backdrop').classList.remove('show');
+    document.getElementById('pay-sheet').classList.remove('show');
+  }
+  function choosePayment(method){
+    dismissPaySheet();
+    setTimeout(()=>{ goTo(2); }, 250);
+  }
+
+  function goTo(n){
+    // leaving screen 3 (for any reason, including the back button) always
+    // cancels any pending auto-advance so it can't fire later on a different screen
+    clearTimeout(countdownTimer);
+    clearInterval(countdownTimer);
+
+    document.getElementById('screen-'+currentScreen).classList.remove('active');
+    currentScreen = n;
+    const el = document.getElementById('screen-'+n);
+    el.classList.add('active');
+
+    const sb = document.getElementById('statusbar');
+    sb.classList.toggle('on-purple', n === 2 || n === 3);
+
+    if(n === 3){
+      const banner = document.getElementById('return-banner');
+      const countEl = document.getElementById('return-count');
+      banner.classList.remove('show');
+      let count = 3;
+      countEl.textContent = count;
+      countdownTimer = setTimeout(()=>{
+        banner.classList.add('show');
+        countdownTimer = setInterval(()=>{
+          count -= 1;
+          if(count <= 0){
+            clearInterval(countdownTimer);
+            goTo(4);
+            return;
+          }
+          countEl.textContent = count;
+        }, 1000);
+      }, 600);
+    }
+
+    if(n === 4){
+      const card = document.getElementById('sync-card');
+      card.classList.remove('show');
+      const fill = document.getElementById('confidence-fill');
+      const num = document.getElementById('confidence-num');
+      fill.style.width = '0%';
+      num.textContent = '0%';
+      setTimeout(()=>{
+        card.classList.add('show');
+        setTimeout(()=>{
+          fill.style.width = '98%';
+          let n2 = 0;
+          const iv2 = setInterval(()=>{
+            n2 += 3;
+            if(n2 >= 98){ n2 = 98; clearInterval(iv2); }
+            num.textContent = n2 + '%';
+          }, 20);
+        }, 350);
+      }, 200);
+    }
+  }
+</script>
+
+<!-- Portfolio disclaimer -->
+<style>
+  .proto-disclaimer{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:9999;
+    max-width:94vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    text-align:center;font-family:system-ui,-apple-system,sans-serif;
+    font-size:10.5px;line-height:1.4;color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.5);
+    backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.1);border-radius:999px;
+    padding:5px 13px;pointer-events:none;}
+  @media (max-width:520px){.proto-disclaimer{font-size:9.5px;padding:4px 10px;}}
+</style>
+<div class="proto-disclaimer" title="Independent design concept by Muskan Gupta. A portfolio prototype, not a real product. Not affiliated with, endorsed by, or connected to any expense-sharing or payments company.">Concept prototype by Muskan Gupta · not affiliated with any real company</div>
+</body>
+</html>
