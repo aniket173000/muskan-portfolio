@@ -95,6 +95,7 @@
   .pthumb:hover{transform:translateY(-4px);border-color:#7FE7C9;}
   .pthumb .shot{height:150px;background:#0d0d0f center top/cover no-repeat;position:relative;}
   .pthumb .shot::after{content:"▶ Try it";position:absolute;bottom:8px;right:8px;font-family:"Space Mono";font-size:10px;background:rgba(0,0,0,0.55);color:#fff;padding:3px 8px;border-radius:999px;}
+  .pthumb.read .shot::after{content:"Read the case";}
   .pthumb .cap{padding:11px 13px;font-size:12.5px;color:#DCF3EC;display:flex;justify-content:space-between;align-items:center;gap:8px;}
   .pthumb .cap b{font-family:"Space Grotesk";font-weight:600;font-size:14px;color:#fff;}
   .pthumb .cap span{font-family:"Space Mono";font-size:10.5px;letter-spacing:0.04em;}
@@ -137,6 +138,8 @@
 
   .device{justify-self:center;width:100%;max-width:250px;border-radius:34px;padding:9px;background:linear-gradient(160deg,#2A333B,#12171B);border:1px solid #333d45;box-shadow:0 30px 60px -30px rgba(0,0,0,0.8);position:relative;display:block;transition:transform .3s;}
   .device:hover{transform:translateY(-6px) rotate(-0.6deg);}
+  .device.static{cursor:default;}
+  .device.static:hover{transform:none;}
   .device::before{content:"";position:absolute;top:16px;left:50%;transform:translateX(-50%);width:52px;height:5px;border-radius:99px;background:#0b0e11;z-index:3;}
   .device .screen{border-radius:26px;overflow:hidden;aspect-ratio:250/500;background:#0d0d0f center top/cover no-repeat;position:relative;}
   .device .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,0.55));opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px;}
@@ -306,10 +309,10 @@
       <div class="proto-strip-top">
         <span class="live-dot"></span>
         <span class="t">A few working prototypes</span>
-        <span class="s">I designed and built each one. Tap any phone to try it in your browser.</span>
+        <span class="s">I designed and built each one. Tap any phone to open it.</span>
       </div>
       <div class="proto-thumbs">
-        <a class="pthumb" href="https://muskangupta2328-bot.github.io/phonepe-payment-recall-/" target="_blank" rel="noopener">
+        <a class="pthumb read" href="#case-upi-recall">
           <div class="shot" style="background-image:url('assets/phonepe.png')"></div>
           <div class="cap"><b>PhonePe Recall</b><span>UPI</span></div>
         </a>
@@ -363,15 +366,15 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">Selected product work</span>
-      <h2>Four problems I found, framed, and built into live prototypes.</h2>
+      <h2>Four problems I found, framed, and built into working prototypes.</h2>
       <p>Each of these started as something small that bothered me or someone I know — across payments, credit, consumer and food-tech. I dug into the problem, worked out a product strategy, decided how I would measure it, and built a demo you can tap through. Different domains, same method.</p>
     </div>
 
     <!-- CASE 1: UPI Recall -->
-    <article class="case reveal">
+    <article class="case reveal" id="case-upi-recall">
       <div class="case-top">
         <span class="case-domain">Fintech · UPI · Trust &amp; Safety</span>
-        <span class="chip live">Live prototype</span>
+        <span class="chip">Case study</span>
         <span class="case-ref">Case 01</span>
       </div>
       <div class="case-hero">
@@ -379,14 +382,12 @@
           <h3>Getting misdirected UPI money back, without giving up your privacy</h3>
           <p class="case-hook">You pay the wrong person by accident. Today there is no safe way to ask for it back. This flow fixes that without ever sharing a phone number.</p>
           <div class="case-cta">
-            <a class="launch" href="https://muskangupta2328-bot.github.io/phonepe-payment-recall-/" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Try the live prototype</a>
-            <span class="case-note">Opens in a new tab</span>
+            <span class="case-note">Interactive demo temporarily offline — the full flow is written up below.</span>
           </div>
         </div>
-        <a class="device" href="https://muskangupta2328-bot.github.io/phonepe-payment-recall-/" target="_blank" rel="noopener" aria-label="Open PhonePe Recall prototype">
-          <div class="screen" style="background-image:url('assets/phonepe.png')"><div class="overlay"><span>▶ Tap to try</span></div></div>
-        </a>
+        <div class="device static">
+          <div class="screen" style="background-image:url('assets/phonepe.png')"></div>
+        </div>
       </div>
       <div class="case-body">
         <div class="case-grid">

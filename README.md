@@ -10,10 +10,17 @@ and a live phone demo inside every case study.
 - `assets/` — prototype preview screenshots (phonepe, cred, splitwise, zomato)
 
 ## Live prototypes (already wired in)
-- PhonePe UPI Recall — https://muskangupta2328-bot.github.io/phonepe-payment-recall-/
 - CRED Social Sync — https://muskangupta2328-bot.github.io/CRED-Auto-Split-Engine-/
 - Splitwise Smart-Sync — https://muskangupta2328-bot.github.io/Splitwise-Smart-Sync-Settlement-/
 - Zomato Mood-Pulse (Figma) — https://www.figma.com/make/beCQhD7rH56MnWNqXy4J2u/Mood-Pulse-Widget-Placement
+
+### Offline: PhonePe UPI Recall
+GitHub disabled `muskangupta2328-bot/phonepe-payment-recall-` on 2026-08-06 under its
+Trademark Policy, which killed the Pages site with it. Case 01 now renders as a
+case study only — no launch button, static phone mock, `Case study` chip.
+To restore it: republish the prototype de-branded (neutral repo name, no PhonePe
+logo/wordmark, "not affiliated" note), then re-add the link in three places in
+`index.html` — the hero strip thumb, the case CTA, and the phone mock.
 
 ## Preview locally
 Double-click `index.html`, or run a local server:
