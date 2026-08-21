@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy-Preserving Recall Request — getting a misdirected UPI payment back (concept prototype)</title>
+<meta name="description" content="Concept prototype: a sender reports a misdirected UPI payment, the platform relays a templated claim, and the recipient refunds in one tap — with no phone number shared in either direction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E1B4B; --navy2:#2E2A6B; --lav:#E9E6F7; --lavdark:#C9C2ED;
+    --green:#0FA968; --green-tint:#E6F8EF; --amber:#B26206; --amber-tint:#FFF7ED;
+    --red:#C0392B; --ink:#24243A; --mute:#6B6B85; --hair:#ECE9FA;
+    --stage:#7C74C9;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(120% 90% at 50% 0%, #191734 0%, #0f0e28 62%, #0b0a1e 100%);
+    font-family:'DM Sans',system-ui,sans-serif; color:var(--ink);
+    padding:14px; overflow:hidden;
+  }
+  /* the whole thing is designed at 375px wide and scaled down to fit any viewport.
+     .fitbox is resized to the *scaled* dimensions so the layout box always matches
+     what's painted — otherwise the centring drifts once the design is wider than
+     the viewport. */
+  .fitbox{position:relative; flex:none;}
+  .stage{
+    display:flex; flex-direction:column; align-items:center;
+    transform-origin:top left; position:absolute; top:0; left:0;
+  }
+
+  /* ---------- flow rail above the phone ---------- */
+  .rail{width:375px; margin:0 auto 18px;}
+  .rail-title{
+    font-family:'DM Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase;
+    color:#8A83C6; text-align:center; margin-bottom:12px;
+  }
+  .rail-steps{display:grid; grid-template-columns:repeat(4,1fr); gap:7px;}
+  .rail-step{opacity:0.4; transition:opacity .35s ease;}
+  .rail-step.on{opacity:1;}
+  .rail-step .bar{height:3px; border-radius:2px; background:#3A3568; transition:background .35s ease;}
+  .rail-step.on .bar,.rail-step.done .bar{background:var(--stage);}
+  .rail-step.done{opacity:0.75;}
+  .rail-step.on .bar{background:#A79EF0;}
+  .rail-step .lbl{
+    font-size:10.5px; line-height:1.35; color:#B6B0E4; margin-top:7px; letter-spacing:0.01em;
+  }
+  .rail-step.on .lbl{color:#fff; font-weight:600;}
+
+  /* ---------- phone ---------- */
+  .phone{
+    width:375px; height:780px; background:#000; border-radius:44px; padding:13px;
+    box-shadow:0 34px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06);
+    flex:none;
+  }
+  .screen{
+    width:100%; height:100%; background:#fff; border-radius:32px; overflow:hidden;
+    position:relative; display:flex; flex-direction:column;
+  }
+  .screen.enter{animation:slidein .34s cubic-bezier(.2,.7,.2,1);}
+  @keyframes slidein{from{opacity:0; transform:translateX(16px);}to{opacity:1; transform:none;}}
+
+  .statusbar{
+    height:30px; display:flex; align-items:center; justify-content:space-between;
+    padding:0 22px; font-size:12px; color:#000; flex-shrink:0; font-weight:500;
+  }
+  .topbar{background:var(--navy); color:#fff; padding:14px 20px 16px; flex-shrink:0;}
+  .topbar h1{font-size:17px; margin:0; font-weight:700; letter-spacing:-0.01em;}
+  .topbar .sub{font-size:12px; color:var(--lavdark); margin-top:3px;}
+  .content{flex:1; overflow-y:auto; padding:20px; background:#fff;}
+
+  /* persona */
+  .persona-tag{
+    position:absolute; top:9px; right:9px; z-index:5;
+    font-family:'DM Mono',monospace; font-size:9.5px; font-weight:500; letter-spacing:0.06em;
+    padding:4px 10px; border-radius:20px; color:#fff;
+  }
+  .persona-tag.sender{background:var(--navy);}
+  .persona-tag.recipient{background:#0B7A52;}
+
+  /* buttons */
+  .btn{
+    display:block; width:100%; padding:14px; border:none; border-radius:11px;
+    font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700;
+    cursor:pointer; text-align:center; margin-top:11px; transition:background .18s, transform .18s, opacity .18s;
+  }
+  .btn:active{transform:scale(0.985);}
+  .btn-primary{background:var(--navy); color:#fff;}
+  .btn-primary:hover{background:var(--navy2);}
+  .btn-danger{background:var(--red); color:#fff;}
+  .btn-danger:hover{background:#a5301f;}
+  .btn-ghost{background:transparent; color:var(--navy); border:1.5px solid var(--lavdark);}
+  .btn-ghost:hover{background:var(--lav);}
+  .btn-link{background:none; color:var(--mute); text-decoration:underline; font-weight:400; font-size:13px; padding:8px 0;}
+
+  .field{
+    width:100%; padding:12px 14px; border:1.5px solid var(--lavdark); border-radius:11px;
+    font-size:14px; margin-top:10px; resize:none; font-family:inherit; color:var(--ink); line-height:1.5;
+  }
+  .field:focus{outline:none; border-color:var(--navy);}
+
+  .card{background:var(--lav); border-radius:13px; padding:15px; margin-top:14px;}
+  .txn-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 8px; margin:0 -8px; border-bottom:1px solid var(--hair); border-radius:9px;
+    cursor:pointer; transition:background .16s;
+  }
+  .txn-row:hover{background:#FAF9FF;}
+  .txn-row.flagged{position:relative;}
+  .txn-name{font-weight:700; font-size:14px; color:var(--ink);}
+  .txn-sub{font-size:11.5px; color:var(--mute); margin-top:3px;}
+  .txn-amt{font-weight:700; font-size:14px; color:var(--ink); white-space:nowrap;}
+  .avatar{
+    width:40px; height:40px; border-radius:50%; background:var(--navy);
+    display:inline-flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:700; font-size:15px; margin-right:12px; flex-shrink:0;
+  }
+  .row-flex{display:flex; align-items:center; min-width:0;}
+
+  .badge{
+    display:inline-block; font-family:'DM Mono',monospace; font-size:9.5px; font-weight:500;
+    letter-spacing:0.07em; padding:4px 9px; border-radius:20px; color:#fff;
+  }
+  .badge-mask{background:var(--mute);}
+
+  .option{
+    display:flex; align-items:flex-start; gap:11px; padding:14px;
+    border:1.5px solid var(--lavdark); border-radius:11px; margin-top:11px;
+    cursor:pointer; transition:border-color .18s, background .18s;
+  }
+  .option:hover{border-color:#A79EF0;}
+  .option.selected{border-color:var(--navy); background:var(--lav);}
+  .option input{width:17px; height:17px; margin-top:2px; flex:none; accent-color:var(--navy);}
+  .option b{font-size:13px; color:var(--ink); display:block;}
+  .option .opt-sub{font-size:11.5px; color:var(--mute); margin-top:3px;}
+
+  .notice{background:var(--amber-tint); border-radius:11px; padding:13px; margin-top:14px; font-size:12px; color:#7C4A00; line-height:1.55;}
+  .notice b{color:var(--amber);}
+  .inline-note{
+    font-size:11.5px; color:var(--mute); margin-top:10px; line-height:1.5;
+    display:none;
+  }
+  .inline-note.show{display:block;}
+  .inline-note.warn{color:var(--red);}
+
+  .guard{
+    font-family:'DM Mono',monospace; font-size:10.5px; color:var(--mute);
+    margin-top:12px; line-height:1.6; letter-spacing:0.01em;
+  }
+  .lead{font-size:12.5px; color:var(--mute); line-height:1.6;}
+  .lead.ink{color:var(--ink);}
+
+  .success-icon{
+    width:64px; height:64px; border-radius:50%; background:var(--green-tint);
+    display:flex; align-items:center; justify-content:center; margin:6px auto 16px;
+    font-size:30px; color:var(--green); animation:pop .4s cubic-bezier(.2,1.3,.4,1);
+  }
+  @keyframes pop{from{transform:scale(0.6); opacity:0;}to{transform:scale(1); opacity:1;}}
+  .center{text-align:center;}
+  .headline{font-weight:700; font-size:16px; color:var(--ink); line-height:1.35;}
+  .amount{font-size:26px; font-weight:700; color:var(--ink); margin-top:10px; letter-spacing:-0.02em;}
+  .ref{
+    font-family:'DM Mono',monospace; background:#F4F3F9; padding:8px 13px; border-radius:9px;
+    font-size:11.5px; color:var(--mute); display:inline-block; margin-top:12px; letter-spacing:0.04em;
+  }
+
+  /* ---------- disclaimer ---------- */
+  .proto-disclaimer{
+    position:fixed; left:50%; bottom:8px; transform:translateX(-50%); z-index:9999;
+    max-width:94vw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    text-align:center; font-family:system-ui,-apple-system,sans-serif;
+    font-size:10.5px; line-height:1.4; color:rgba(255,255,255,0.6); background:rgba(0,0,0,0.5);
+    backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.1); border-radius:999px;
+    padding:5px 13px; pointer-events:none;
+  }
+
+  @media (max-width:430px){
+    .proto-disclaimer{font-size:9.5px; padding:4px 10px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;}
+    .rail-step,.rail-step .bar{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="fitbox" id="fitbox">
+<div class="stage" id="stage">
+  <!-- flow rail -->
+  <div class="rail">
+    <div class="rail-title">Happy path · no phone number shared at any step</div>
+    <div class="rail-steps" id="rail">
+      <div class="rail-step" data-stage="0"><div class="bar"></div><div class="lbl">Sender reports</div></div>
+      <div class="rail-step" data-stage="1"><div class="bar"></div><div class="lbl">Platform relays</div></div>
+      <div class="rail-step" data-stage="2"><div class="bar"></div><div class="lbl">Recipient reviews</div></div>
+      <div class="rail-step" data-stage="3"><div class="bar"></div><div class="lbl">Both sides resolved</div></div>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="screen" id="screen"></div>
+  </div>
+</div>
+</div>
+
+<div class="proto-disclaimer" title="Independent design concept by Muskan Gupta. A portfolio prototype, not a real product. Not affiliated with, endorsed by, or connected to any payments company, bank or UPI app.">Concept prototype by Muskan Gupta · not affiliated with any real company</div>
+
+<script>
+let selectedReason = null;
+
+const SENDER    = '<div class="persona-tag sender">SENDER · MEERA</div>';
+const RECIPIENT = '<div class="persona-tag recipient">RECIPIENT · RAMESH</div>';
+const bar = (time) => `<div class="statusbar"><span>${time}</span><span>●●●●  Wi‑Fi</span></div>`;
+
+/* which rail stage each screen belongs to */
+const stageOf = {
+  history:0, detail:0, report:0, claim:0,
+  submitted:1,
+  recipient_notice:2, recipient_review:2, declined:2,
+  refunded:3, resolved:3
+};
+
+const screens = {};
+
+screens.history = () => `
+  ${SENDER}${bar('9:41')}
+  <div class="topbar"><h1>Transaction History</h1><div class="sub">Balance ₹8,220</div></div>
+  <div class="content">
+    <div class="txn-row" onclick="go('detail')">
+      <div class="row-flex"><div class="avatar">R</div>
+        <div><div class="txn-name">Ramesh Plumber</div><div class="txn-sub">Today, 11:20 AM · UPI</div></div>
+      </div>
+      <div class="txn-amt">− ₹4,000</div>
+    </div>
+    <div class="txn-row" style="cursor:default">
+      <div class="row-flex"><div class="avatar">S</div>
+        <div><div class="txn-name">Sunita Tutor</div><div class="txn-sub">Yesterday · UPI</div></div>
+      </div>
+      <div class="txn-amt">− ₹1,500</div>
+    </div>
+    <div class="txn-row" style="cursor:default">
+      <div class="row-flex"><div class="avatar">M</div>
+        <div><div class="txn-name">Maid Services</div><div class="txn-sub">3 days ago · UPI</div></div>
+      </div>
+      <div class="txn-amt">− ₹2,000</div>
+    </div>
+    <p class="lead" style="margin-top:18px;">Tap the ₹4,000 payment to “Ramesh Plumber” — that's the one Meera doesn't recognise.</p>
+  </div>`;
+
+screens.detail = () => `
+  ${SENDER}${bar('9:41')}
+  <div class="topbar"><h1>Payment Details</h1><div class="sub">Ref: TXN9284710</div></div>
+  <div class="content">
+    <div class="center">
+      <div class="avatar" style="width:56px;height:56px;font-size:20px;margin:0 auto 10px;">R</div>
+      <div class="headline" style="font-size:17px;">Ramesh Plumber</div>
+      <div style="margin-top:8px;"><span class="badge badge-mask">NUMBER HIDDEN</span></div>
+      <div class="amount">₹4,000</div>
+      <p class="lead" style="margin-top:4px;">Today, 11:20 AM · Sent via UPI ID</p>
+    </div>
+    <div class="notice"><b>Note:</b> The app only shows a recipient's verified name so you can confirm who you're paying — their number is never displayed, not even to you.</div>
+    <button class="btn btn-danger" onclick="go('report')">This wasn't who I meant to pay</button>
+    <button class="btn btn-link" onclick="go('history')">Back to history</button>
+  </div>`;
+
+screens.report = () => `
+  ${SENDER}${bar('9:41')}
+  <div class="topbar"><h1>Report an Issue</h1><div class="sub">₹4,000 to Ramesh Plumber</div></div>
+  <div class="content">
+    <p class="lead">What went wrong with this payment?</p>
+    <div class="option ${selectedReason==='wrong'?'selected':''}" onclick="selectReason('wrong')">
+      <input type="radio" ${selectedReason==='wrong'?'checked':''} aria-label="Sent to the wrong person">
+      <div><b>Sent to the wrong person</b><div class="opt-sub">Saved contact, mistyped UPI ID, or a number that was reassigned</div></div>
+    </div>
+    <div class="option" onclick="showNote('fraud')">
+      <input type="radio" aria-label="This looks like fraud">
+      <div><b>This looks like fraud</b><div class="opt-sub">Routes to a separate, fraud-specific flow</div></div>
+    </div>
+    <p class="inline-note" id="note-fraud">Out of scope for this case study — fraud has its own investigation path. This prototype follows the misdirected-payment journey.</p>
+    <button class="btn btn-primary" onclick="continueReport()">Continue</button>
+    <p class="inline-note warn" id="note-pick">Pick a reason to continue.</p>
+  </div>`;
+
+screens.claim = () => `
+  ${SENDER}${bar('9:41')}
+  <div class="topbar"><h1>Submit Recall Request</h1><div class="sub">Step 2 of 2</div></div>
+  <div class="content">
+    <div class="notice"><b>How this works:</b> We'll send Ramesh a notice about your claim. Your number is never shared with them — and theirs is never shared with you.</div>
+    <p class="lead ink" style="margin-top:14px;">Add an optional note (templated, no contact details allowed):</p>
+    <textarea class="field" rows="3" aria-label="Templated note to the recipient">This payment was meant for a different contact. Please review and refund if it wasn't intended for you.</textarea>
+    <p class="guard">⚠ One recall request per transaction.<br>⚠ Direct messaging is disabled to prevent misuse.</p>
+    <button class="btn btn-primary" onclick="go('submitted')">Submit Recall Request</button>
+  </div>`;
+
+screens.submitted = () => `
+  ${SENDER}${bar('9:41')}
+  <div class="topbar"><h1>Request Sent</h1><div class="sub">We'll notify you of any update</div></div>
+  <div class="content center">
+    <div class="success-icon">✓</div>
+    <div class="headline">Recall request submitted</div>
+    <p class="lead" style="margin-top:7px;">Ramesh has been notified — no personal details were shared.</p>
+    <div class="ref">REF: RCL-88213-MR</div>
+    <button class="btn btn-ghost" style="margin-top:22px;" onclick="go('recipient_notice')">See what the recipient sees →</button>
+  </div>`;
+
+screens.recipient_notice = () => `
+  ${RECIPIENT}${bar('9:44')}
+  <div class="topbar"><h1>Payment Notice</h1><div class="sub">New alert</div></div>
+  <div class="content">
+    <div class="card">
+      <div class="headline" style="font-size:14px;">A sender believes a payment to you was a mistake</div>
+      <p class="lead" style="margin-top:9px;">₹4,000 received today at 11:20 AM. The sender says: “This payment was meant for a different contact. Please review and refund if it wasn't intended for you.”</p>
+    </div>
+    <div class="notice"><b>Note:</b> The sender's identity and number are not shared with you. You can refund or decline — no reply or chat is required.</div>
+    <button class="btn btn-primary" onclick="go('recipient_review')">Review Payment</button>
+  </div>`;
+
+screens.recipient_review = () => `
+  ${RECIPIENT}${bar('9:44')}
+  <div class="topbar"><h1>Review Payment</h1><div class="sub">Ref: RCL-88213-MR</div></div>
+  <div class="content center">
+    <div class="amount" style="margin-top:8px;">₹4,000</div>
+    <p class="lead">Received today, 11:20 AM</p>
+    <p class="lead ink" style="margin-top:18px;text-align:left;">If this wasn't intended for you, you can send it back in one tap — funds go straight to the original sender, no number needed on either side.</p>
+    <button class="btn btn-primary" onclick="go('refunded')">Refund ₹4,000</button>
+    <button class="btn btn-ghost" onclick="go('declined')">Decline — I believe this is mine</button>
+  </div>`;
+
+screens.refunded = () => `
+  ${RECIPIENT}${bar('9:45')}
+  <div class="topbar"><h1>Refund Sent</h1><div class="sub">Ref: RCL-88213-MR</div></div>
+  <div class="content center">
+    <div class="success-icon">✓</div>
+    <div class="headline">₹4,000 refunded successfully</div>
+    <p class="lead" style="margin-top:7px;">Sent directly to the original sender's account. No personal details were exchanged at any point.</p>
+    <button class="btn btn-ghost" style="margin-top:22px;" onclick="go('resolved')">See the sender's final screen →</button>
+  </div>`;
+
+screens.declined = () => `
+  ${RECIPIENT}${bar('9:45')}
+  <div class="topbar"><h1>Claim Declined</h1><div class="sub">Ref: RCL-88213-MR</div></div>
+  <div class="content">
+    <p class="lead ink" style="margin-top:14px;">Ramesh has declined the recall request. The claim is logged, and if the sender wants to escalate, the app can issue a masked dispute certificate for NPCI or the police — still without revealing either number.</p>
+    <button class="btn btn-ghost" style="margin-top:20px;" onclick="go('recipient_review')">← Back to review</button>
+  </div>`;
+
+screens.resolved = () => `
+  ${SENDER}${bar('9:45')}
+  <div class="topbar"><h1>Money Recovered</h1><div class="sub">Ref: RCL-88213-MR</div></div>
+  <div class="content center">
+    <div class="success-icon">✓</div>
+    <div class="headline">₹4,000 has been refunded to you</div>
+    <p class="lead" style="margin-top:7px;">Resolved entirely in-app — Meera and Ramesh never saw each other's phone number.</p>
+    <button class="btn btn-ghost" style="margin-top:22px;" onclick="restart()">Start over</button>
+  </div>`;
+
+function selectReason(r){ selectedReason = r; render('report'); }
+
+function continueReport(){
+  if(selectedReason) go('claim');
+  else document.getElementById('note-pick').classList.add('show');
+}
+
+function showNote(id){
+  const el = document.getElementById('note-' + id);
+  if(el) el.classList.add('show');
+}
+
+function restart(){ selectedReason = null; go('history'); }
+
+function go(name){ render(name); }
+
+function render(name){
+  if(!screens[name]) name = 'history';
+  const el = document.getElementById('screen');
+  el.innerHTML = screens[name]();
+  el.classList.remove('enter');
+  void el.offsetWidth;          // restart the transition
+  el.classList.add('enter');
+  paintRail(stageOf[name]);
+}
+
+function paintRail(stage){
+  document.querySelectorAll('#rail .rail-step').forEach(step => {
+    const s = Number(step.dataset.stage);
+    step.classList.toggle('on', s === stage);
+    step.classList.toggle('done', s < stage);
+  });
+}
+
+/* scale the 375px design down so the whole phone is always visible, no scrolling */
+const stage  = document.getElementById('stage');
+const fitbox = document.getElementById('fitbox');
+function fitStage(){
+  stage.style.transform = 'none';
+  const w = stage.offsetWidth, h = stage.offsetHeight;
+  /* the vertical reserve leaves room for the disclaimer chip pinned to the bottom */
+  const s = Math.min(1, (window.innerWidth - 24) / w, (window.innerHeight - 96) / h);
+  stage.style.transform = 'scale(' + s.toFixed(4) + ')';
+  fitbox.style.width  = Math.round(w * s) + 'px';
+  fitbox.style.height = Math.round(h * s) + 'px';
+}
+window.addEventListener('resize', fitStage);
+window.addEventListener('load', fitStage);
+
+/* ?screen=recipient_review deep-links a single screen (handy for sharing a frame) */
+render(new URLSearchParams(location.search).get('screen') || 'history');
+fitStage();
+</script>
+</body>
+</html>

@@ -5,6 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Muskan Gupta · Product Analyst · APM · Product Manager</title>
 <meta name="description" content="Product professional open to Product Analyst, APM, PM and Product Owner roles — full-time or internship, across any domain. MBA in Finance & Data Analytics. Four case studies spanning payments, credit, consumer and food-tech, each with a live prototype you can click through." />
+<link rel="canonical" href="https://muskangupta-pm.netlify.app/" />
+<meta name="author" content="Muskan Gupta" />
+<meta name="theme-color" content="#0C6B58" />
+
+<!-- Link previews on LinkedIn / WhatsApp / Slack -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://muskangupta-pm.netlify.app/" />
+<meta property="og:site_name" content="Muskan Gupta — Product Portfolio" />
+<meta property="og:title" content="Muskan Gupta — Product Analyst · APM · Product Manager" />
+<meta property="og:description" content="Four product case studies across payments, credit and consumer — each with a working prototype you can click through. MBA in Finance &amp; Data Analytics. Open to full-time and internship roles." />
+<meta property="og:image" content="https://muskangupta-pm.netlify.app/assets/og-cover.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Muskan Gupta — product portfolio with four clickable prototypes" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Muskan Gupta — Product Analyst · APM · Product Manager" />
+<meta name="twitter:description" content="Four product case studies across payments, credit and consumer — each with a working prototype you can click through." />
+<meta name="twitter:image" content="https://muskangupta-pm.netlify.app/assets/og-cover.png" />
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -135,6 +156,8 @@
   .launch:hover{background:#12967d;transform:translateY(-2px);}
   .launch svg{width:16px;height:16px;}
   .case-note{font-family:"Space Mono";font-size:11.5px;color:#6C7880;}
+  .readmore{font-size:14.5px;font-weight:600;color:#7FD3BC;border-bottom:1px solid rgba(127,211,188,0.35);padding-bottom:2px;transition:color .2s,border-color .2s;}
+  .readmore:hover{color:#A8E7D6;border-color:#A8E7D6;}
 
   .device{justify-self:center;width:100%;max-width:250px;border-radius:34px;padding:9px;background:linear-gradient(160deg,#2A333B,#12171B);border:1px solid #333d45;box-shadow:0 30px 60px -30px rgba(0,0,0,0.8);position:relative;display:block;transition:transform .3s;}
   .device:hover{transform:translateY(-6px) rotate(-0.6deg);}
@@ -312,9 +335,9 @@
         <span class="s">I designed and built each one. Tap any phone to open it.</span>
       </div>
       <div class="proto-thumbs">
-        <a class="pthumb read" href="#case-upi-recall">
-          <div class="shot" style="background-image:url('assets/phonepe.png')"></div>
-          <div class="cap"><b>PhonePe Recall</b><span>UPI</span></div>
+        <a class="pthumb" href="prototypes/upi-recall/" target="_blank" rel="noopener">
+          <div class="shot" style="background-image:url('assets/upi-recall.png')"></div>
+          <div class="cap"><b>UPI Recall Request</b><span>UPI</span></div>
         </a>
         <a class="pthumb" href="prototypes/card-bill-split/" target="_blank" rel="noopener">
           <div class="shot" style="background-image:url('assets/cred.png')"></div>
@@ -374,7 +397,7 @@
     <article class="case reveal" id="case-upi-recall">
       <div class="case-top">
         <span class="case-domain">Fintech · UPI · Trust &amp; Safety</span>
-        <span class="chip">Case study</span>
+        <span class="chip live">Live prototype</span>
         <span class="case-ref">Case 01</span>
       </div>
       <div class="case-hero">
@@ -382,12 +405,14 @@
           <h3>Getting misdirected UPI money back, without giving up your privacy</h3>
           <p class="case-hook">You pay the wrong person by accident. Today there is no safe way to ask for it back. This flow fixes that without ever sharing a phone number.</p>
           <div class="case-cta">
-            <span class="case-note">Interactive demo temporarily offline — the full flow is written up below.</span>
+            <a class="launch" href="prototypes/upi-recall/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Try the live prototype</a>
+            <a class="readmore" href="https://versed-hedgehog-ded.notion.site/UPI-Apps-Privacy-Preserving-UPI-Recall-Request-3962ab22a3148084a985c9f6a7be3418" target="_blank" rel="noopener">Read the full write-up →</a>
           </div>
         </div>
-        <div class="device static">
-          <div class="screen" style="background-image:url('assets/phonepe.png')"></div>
-        </div>
+        <a class="device" href="prototypes/upi-recall/" target="_blank" rel="noopener" aria-label="Open the UPI recall request prototype">
+          <div class="screen" style="background-image:url('assets/upi-recall.png')"><div class="overlay"><span>▶ Tap to try</span></div></div>
+        </a>
       </div>
       <div class="case-body">
         <div class="case-grid">
@@ -402,10 +427,10 @@
             <p>She wants her money back, but she refuses any workaround that hands her personal number to someone she does not know.</p>
           </div>
         </div>
-        <div class="cg-label" style="margin:24px 0 14px;">The fix: PhonePe acts as the go-between</div>
+        <div class="cg-label" style="margin:24px 0 14px;">The fix: the app acts as the go-between</div>
         <ul class="flow">
           <li><b>Report.</b> The sender taps "This wasn't who I meant to pay" right on the payment receipt.</li>
-          <li><b>Relay.</b> PhonePe sends the recipient a fixed template message: "A sender thinks this ₹4,000 payment was a mistake." No numbers, no names.</li>
+          <li><b>Relay.</b> The app sends the recipient a fixed template message: "A sender thinks this ₹4,000 payment was a mistake." No numbers, no names.</li>
           <li><b>Resolve.</b> The recipient can refund in one tap through the same payment rails, or decline.</li>
           <li><b>Guardrails.</b> One template request per payment and no open chat, so it cannot be turned into harassment or a scam.</li>
         </ul>
@@ -432,7 +457,7 @@
           <div class="case-cta">
             <a class="launch" href="prototypes/card-bill-split/" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Try the live prototype</a>
-            <span class="case-note">Opens in a new tab</span>
+            <a class="readmore" href="https://versed-hedgehog-ded.notion.site/CRED-The-Auto-Split-Engine-3572ab22a31480238039f8e9fb7967f9" target="_blank" rel="noopener">Read the full write-up →</a>
           </div>
         </div>
         <a class="device" href="prototypes/card-bill-split/" target="_blank" rel="noopener" aria-label="Open CRED Social Sync prototype">
@@ -481,7 +506,7 @@
           <div class="case-cta">
             <a class="launch" href="prototypes/group-settle/" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>Try the live prototype</a>
-            <span class="case-note">Opens in a new tab</span>
+            <a class="readmore" href="https://versed-hedgehog-ded.notion.site/Solving-the-Settlement-Gap-in-Splitwise-3562ab22a314800a8d33da658b7e92d7" target="_blank" rel="noopener">Read the full write-up →</a>
           </div>
         </div>
         <a class="device" href="prototypes/group-settle/" target="_blank" rel="noopener" aria-label="Open Splitwise Smart-Sync prototype">
@@ -623,6 +648,25 @@
 </section>
 
 <footer>© 2026 Muskan Gupta · Product &amp; Strategy</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Muskan Gupta",
+  "jobTitle": "Product Analyst / Associate Product Manager",
+  "email": "mailto:muskangupta.2328@gmail.com",
+  "telephone": "+91-88390-62051",
+  "url": "https://muskangupta-pm.netlify.app/",
+  "sameAs": ["https://www.linkedin.com/in/muskan-gupta-9b29991bb"],
+  "address": { "@type": "PostalAddress", "addressLocality": "Bengaluru", "addressCountry": "IN" },
+  "alumniOf": [
+    { "@type": "CollegeOrUniversity", "name": "Prestige Institute of Management and Research, Indore" },
+    { "@type": "CollegeOrUniversity", "name": "Idyllic Institute of Management, Indore" }
+  ],
+  "knowsAbout": ["Product Management", "Product Discovery", "PRD Writing", "Product Analytics", "SQL", "Power BI", "UPI Payments", "Fintech"]
+}
+</script>
 
 <script>
   const availBar=document.getElementById('availBar');
